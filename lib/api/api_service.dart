@@ -2,12 +2,15 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../model/coin.dart';
 import '../model/coin_detail.dart';
+import '../model/coin_graph.dart';
 
 class ApiService {
-  final String baseUrl = 'http://192.168.1.7:5000/api/currencies';
+  final String baseUrl =
+      'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies?page=1&size=10&category=';
 
   Future<Coin> fetchCoins() async {
     final response = await http.get(Uri.parse(baseUrl));
+    print(response);
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
@@ -27,8 +30,9 @@ class ApiService {
   }
 
   Future<CoinDetail> coinDetails(String? name) async {
-    final response = await http.get(
-        Uri.parse('http://192.168.1.7:5000/api/currencies/rwa/coin/$name'));
+    final response = await http.get(Uri.parse(
+        'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/coin/$name'));
+    print(baseUrl);
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
@@ -45,6 +49,17 @@ class ApiService {
       }
     } else {
       throw Exception('Failed to load coin details');
+    }
+  }
+
+  Future<CoinGraph> fetchCoinGraphData(String name) async {
+    final response = await http.get(Uri.parse(
+        'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/graph/coinOHLC/$name'));
+
+    if (response.statusCode == 200) {
+      return CoinGraph.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load coin graph data');
     }
   }
 }
