@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import '../model/coin.dart';
 import '../model/coin_detail.dart';
 import '../model/coin_graph.dart';
+import '../model/hightlight.dart';
+import '../model/trend.dart';
 
 class ApiService {
   final String baseUrl =
@@ -60,6 +62,32 @@ class ApiService {
       return CoinGraph.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load coin graph data');
+    }
+  }
+
+  final String highlightApiUrl =
+      'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/highlight';
+
+  Future<HighlightModel> fetchHighlightData() async {
+    final response = await http.get(Uri.parse(highlightApiUrl));
+
+    if (response.statusCode == 200) {
+      return HighlightModel.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to load highlight data');
+    }
+  }
+
+  final String trendApiUrl = 'https://rwa-f1623a22e3ed.herokuapp.com';
+
+  Future<TrendResponse> fetchTrends() async {
+    final response =
+        await http.get(Uri.parse('$trendApiUrl/api/currencies/rwa/trend'));
+
+    if (response.statusCode == 200) {
+      return TrendResponse.fromMap(json.decode(response.body));
+    } else {
+      throw Exception('Failed to load trends');
     }
   }
 }
