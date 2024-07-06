@@ -481,6 +481,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       {
         'marketCap':
             '\$${highlight.highlightData.marketCap.toStringAsFixed(2)}',
+        'marketCapChange24h': highlight.highlightData.marketCapChange24h,
         'volume_24h':
             '\$${highlight.highlightData.volume24h.toStringAsFixed(2)}',
         'color': '0xFF222224'
@@ -489,8 +490,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'title': 'Top 3 Tokens',
         'tokens': trend.trend
             .take(3)
-            .map(
-                (coin) => {'name': coin.name, 'low_24': coin.low24h.toString()})
+            .map((coin) => {
+                  'name': coin.name,
+                  'low_24': coin.low24h.toString(),
+                  'priceChange': coin.priceChange24h
+                })
             .toList(),
         'color': '0xFF333333' // Changed to lighter black
       },
@@ -498,8 +502,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'title': 'Newly Added Tokens',
         'tokens': trend.trend.reversed
             .take(3)
-            .map(
-                (coin) => {'name': coin.name, 'low_24': coin.low24h.toString()})
+            .map((coin) => {
+                  'name': coin.name,
+                  'low_24': coin.low24h.toString(),
+                  'priceChange': coin.priceChange24h
+                })
             .toList(),
         'color': '0xFF333333' // Changed to lighter black
       },
@@ -558,14 +565,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     Row(
                                       children: [
-                                        const Icon(
-                                          Icons.arrow_drop_down,
-                                          color: Colors.red,
+                                        Icon(
+                                          highlight.highlightData
+                                                      .marketCapChange24h >=
+                                                  0
+                                              ? Icons.arrow_drop_up
+                                              : Icons.arrow_drop_down,
+                                          color: highlight.highlightData
+                                                      .marketCapChange24h >=
+                                                  0
+                                              ? Colors.green
+                                              : Colors.red,
                                         ),
                                         Text(
                                           '${highlight.highlightData.marketCapChange24h.toStringAsFixed(2)}%',
-                                          style: const TextStyle(
-                                            color: Colors.red,
+                                          style: TextStyle(
+                                            color: highlight.highlightData
+                                                        .marketCapChange24h >=
+                                                    0
+                                                ? Colors.green
+                                                : Colors.red,
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
@@ -625,14 +644,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                     Row(
                                       children: [
-                                        const Icon(
-                                          Icons.arrow_drop_down,
-                                          color: Colors.red,
+                                        Icon(
+                                          token['priceChange'] >= 0
+                                              ? Icons.arrow_drop_up
+                                              : Icons.arrow_drop_down,
+                                          color: token['priceChange'] >= 0
+                                              ? Colors.green
+                                              : Colors.red,
                                         ),
                                         Text(
                                           token['low_24']!,
-                                          style: const TextStyle(
-                                            color: Colors.red,
+                                          style: TextStyle(
+                                            color: token['priceChange'] >= 0
+                                                ? Colors.green
+                                                : Colors.red,
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
