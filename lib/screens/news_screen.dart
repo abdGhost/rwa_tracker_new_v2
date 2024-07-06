@@ -25,15 +25,6 @@ class _NewsScreenState extends State<NewsScreen> {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(20, 20, 22, 1.0),
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Color(0xFF34906c),
-          ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
         elevation: 0,
         title: const Text(
           'Blog',
