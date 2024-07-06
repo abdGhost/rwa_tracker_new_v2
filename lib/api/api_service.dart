@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../model/blog.dart';
 import '../model/coin.dart';
 import '../model/coin_detail.dart';
 import '../model/coin_graph.dart';
@@ -88,6 +89,22 @@ class ApiService {
       return TrendResponse.fromMap(json.decode(response.body));
     } else {
       throw Exception('Failed to load trends');
+    }
+  }
+
+  final String blogApiUrl =
+      "https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/blog";
+
+  Future<BlogModel> fetchBlogs() async {
+    final response = await http.get(Uri.parse(blogApiUrl));
+
+    if (response.statusCode == 200) {
+      // If the server returns a 200 OK response, parse the JSON.
+      return BlogModel.fromJson(json.decode(response.body));
+    } else {
+      // If the server did not return a 200 OK response,
+      // throw an exception.
+      throw Exception('Failed to load blogs');
     }
   }
 }

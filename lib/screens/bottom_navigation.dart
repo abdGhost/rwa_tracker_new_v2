@@ -45,7 +45,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: 'News',
+            label: 'Blog',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.video_collection),
