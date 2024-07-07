@@ -136,7 +136,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '\$${coinDetail.detail!.marketData!.currentPrice['usd']}'
+                                '\$${coinDetail.detail!.marketData!.marketCap['usd']}'
                                     .toString(),
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -158,7 +158,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '\$${coinDetail.detail!.marketData!.currentPrice['usd']}'
+                                '\$${coinDetail.detail!.marketData!.totalVolume['usd']}'
                                     .toString(),
                                 style: const TextStyle(
                                   color: Colors.white,
@@ -304,7 +304,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
+                                '\$${coinDetail.detail!.marketData!.marketCap['usd']}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -324,7 +324,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
+                                '\$${coinDetail.detail!.marketData!.fullyDilutedValuation['usd']}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -333,25 +333,25 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                             ],
                           ),
                           const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Trading Volume',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     const Text(
+                          //       'Trading Volume',
+                          //       style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //     Text(
+                          //       '#${coinDetail.detail!.marketCapRank.toString()}',
+                          //       style: const TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
                           const Divider(),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -364,7 +364,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
+                                '\$${coinDetail.detail!.marketData!.high24H['usd']}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -384,7 +384,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
+                                '\$${coinDetail.detail!.marketData!.low24H['usd']}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -404,7 +404,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
+                                '\$${coinDetail.detail!.marketData!.circulatingSupply}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -424,7 +424,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                 ),
                               ),
                               Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
+                                '\$${coinDetail.detail!.marketData!.totalSupply}',
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
@@ -433,66 +433,66 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                             ],
                           ),
                           const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'All-Time High',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Since All-Time High',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'All-Time High date',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                              Text(
-                                '#${coinDetail.detail!.marketCapRank.toString()}',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Divider(),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     const Text(
+                          //       'All-Time High',
+                          //       style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //     Text(
+                          //       '#${coinDetail.detail!.marketCapRank.toString()}',
+                          //       style: const TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // const Divider(),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     const Text(
+                          //       'Since All-Time High',
+                          //       style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //     Text(
+                          //       '#${coinDetail.detail!.marketCapRank.toString()}',
+                          //       style: const TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // const Divider(),
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //   children: [
+                          //     const Text(
+                          //       'All-Time High date',
+                          //       style: TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //     Text(
+                          //       '#${coinDetail.detail!.marketCapRank.toString()}',
+                          //       style: const TextStyle(
+                          //         fontSize: 16,
+                          //         fontWeight: FontWeight.w400,
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          // const Divider(),
                         ],
                       )
                     ],

@@ -17,7 +17,7 @@ class _VideoScreenState extends State<VideoScreen> {
       backgroundColor: const Color.fromRGBO(20, 20, 22, 1.0),
       appBar: AppBar(
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Videos',
           style: TextStyle(
             color: Colors.white,
