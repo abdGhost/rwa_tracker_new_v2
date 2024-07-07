@@ -6,6 +6,7 @@ class Video {
   final String duration;
   final String instructor;
   final int ratingCount;
+  final String url; // Add this field to hold the video URL
 
   Video({
     required this.thumbnail,
@@ -15,6 +16,7 @@ class Video {
     required this.duration,
     required this.instructor,
     required this.ratingCount,
+    required this.url,
   });
 }
 
@@ -27,6 +29,7 @@ List<Video> videos = [
     duration: '3h 20m',
     instructor: 'John Doe',
     ratingCount: 1500,
+    url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
   ),
   Video(
     thumbnail: 'assets/video2.jpg',
@@ -36,6 +39,7 @@ List<Video> videos = [
     duration: '5h 15m',
     instructor: 'Jane Smith',
     ratingCount: 2000,
+    url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
   ),
   // Add more video instances here
 ];
