@@ -26,6 +26,20 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
           _isPlaying = _controller.value.isPlaying;
         });
       });
+
+    _controller.addListener(() {
+      setState(() {
+        widget.video.progress = _controller.value.position.inSeconds /
+            _controller.value.duration.inSeconds;
+      });
+
+      // Check if the video is completed
+      if (_controller.value.position >= _controller.value.duration) {
+        setState(() {
+          widget.video.progress = 1.0; // Set progress to 100%
+        });
+      }
+    });
   }
 
   @override
@@ -68,7 +82,7 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
         VideoProgressIndicator(
           _controller,
           allowScrubbing: true,
-          colors: const VideoProgressColors(
+          colors: VideoProgressColors(
             playedColor: Colors.red,
             backgroundColor: Colors.white,
           ),
@@ -86,7 +100,7 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
               ),
               Text(
                 "${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}",
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Colors.white),
               ),
               IconButton(
                 icon: Icon(
@@ -116,21 +130,7 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
       appBar: _isFullScreen
           ? null
           : AppBar(
-              leading: IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  color: Color(0xFF34906c),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              title: Text(
-                widget.video.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                ),
-              ),
+              title: Text(widget.video.title),
             ),
       body: Center(
         child: _controller.value.isInitialized
@@ -146,17 +146,16 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
                     Positioned(
                       top: 10,
                       left: 20,
-                      child: IntrinsicWidth(
-                        child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          color: Colors.black54,
-                          child: Text(
-                            widget.video.title,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                      right: 20,
+                      child: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        color: Colors.black54,
+                        child: Text(
+                          widget.video.title,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),

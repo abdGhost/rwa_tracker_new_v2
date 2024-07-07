@@ -2,18 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:rwatrackernew/screens/video_play_screen.dart';
 import '../model/video_model.dart';
 
-class VideoItem extends StatelessWidget {
+class VideoItem extends StatefulWidget {
   final Video video;
 
   const VideoItem({super.key, required this.video});
 
   @override
+  _VideoItemState createState() => _VideoItemState();
+}
+
+class _VideoItemState extends State<VideoItem> {
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return VideoPlayScreen(video: video); // Pass the video object
-        }));
+      onTap: () async {
+        final result = await Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) {
+            return VideoPlayScreen(
+                video: widget.video); // Pass the video object
+          }),
+        );
+        // Force a rebuild to update the progress
+        setState(() {});
       },
       child: Card(
         color: const Color(0xFF222224),
@@ -30,8 +40,7 @@ class VideoItem extends StatelessWidget {
                     bottomLeft: Radius.circular(4.0),
                   ),
                   image: DecorationImage(
-                    image:
-                        AssetImage(video.thumbnail), // Use video thumbnail URL
+                    image: NetworkImage(widget.video.thumbnail),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -43,7 +52,7 @@ class VideoItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        video.title,
+                        widget.video.title,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -53,7 +62,7 @@ class VideoItem extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'By ${video.instructor}',
+                            'By ${widget.video.instructor}',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -61,7 +70,7 @@ class VideoItem extends StatelessWidget {
                           ),
                           const SizedBox(width: 20),
                           Text(
-                            'Duration - ${video.duration}',
+                            'Duration - ${widget.video.duration}',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
@@ -71,13 +80,19 @@ class VideoItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 10.0),
                       Text(
-                        video.description,
+                        widget.video.description,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.grey[800],
                         ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      LinearProgressIndicator(
+                        value: widget.video.progress,
+                        backgroundColor: Colors.grey[700],
+                        color: Colors.blue,
                       ),
                     ],
                   ),
