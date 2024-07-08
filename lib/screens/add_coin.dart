@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:math'; // Import the math library
+import 'dart:math';
 
 class AddCoinScreen extends StatefulWidget {
   const AddCoinScreen({super.key});
@@ -19,6 +19,7 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
   dynamic _selectedCoin;
   Map<String, dynamic>? _coinDetails;
   String _selectedDuration = '1 year';
+  double _annualGrowthRate = 0.0; // Store the calculated annual growth rate
 
   Future<void> _searchCoins(String query) async {
     if (query.isEmpty) {
@@ -31,10 +32,8 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
 
     setState(() {
       _isLoading = true;
-      _selectedCoin =
-          null; // Reset selected coin when a new search is performed
-      _showSearchResults =
-          true; // Show search results when a new search is performed
+      _selectedCoin = null;
+      _showSearchResults = true;
     });
 
     final url =
@@ -64,15 +63,37 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
       setState(() {
         _coinDetails = data;
       });
+      await _fetchHistoricalData(
+          id); // Fetch historical data after getting coin details
     } else {
       // Handle the error
     }
   }
 
+  Future<void> _fetchHistoricalData(String id) async {
+    final url = Uri.parse(
+        'https://api.coingecko.com/api/v3/coins/$id/market_chart?vs_currency=usd&days=365');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      List<dynamic> prices = data['prices'];
+      if (prices.isNotEmpty) {
+        double initialPrice = prices.first[1];
+        double finalPrice = prices.last[1];
+        _annualGrowthRate = (finalPrice - initialPrice) / initialPrice;
+      } else {
+        _annualGrowthRate = 0.0;
+      }
+    } else {
+      _annualGrowthRate = 0.0;
+      // Handle the error
+    }
+  }
+
   double _calculatePrediction(double amount, String duration) {
-    double annualGrowthRate = 0.1; // Example annual growth rate of 10%
     int years = int.parse(duration.split(' ')[0]);
-    return amount * pow((1 + annualGrowthRate), years);
+    return amount * pow((1 + _annualGrowthRate), years);
   }
 
   @override
@@ -157,8 +178,7 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
                                 setState(() {
                                   _selectedCoin = coin;
                                   _showSearchResults = false;
-                                  _searchController
-                                      .clear(); // Clear the search field
+                                  _searchController.clear();
                                 });
                               },
                             );

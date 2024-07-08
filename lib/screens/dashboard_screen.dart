@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:rwatrackernew/screens/coin_details_screen.dart';
 import '../api/api_service.dart';
+import '../constant/app_color.dart';
 import '../model/coin.dart';
 import '../model/hightlight.dart';
 import '../model/trend.dart';
@@ -46,7 +47,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(20, 20, 22, 1.0),
+      backgroundColor: primaryColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
@@ -132,7 +133,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'marketCapChange24h': highlight.highlightData.marketCapChange24h,
         'volume_24h':
             '\$${highlight.highlightData.volume24h.toStringAsFixed(2)}',
-        'color': '0xFF222224'
+        'color': cardColor.value.toString(),
       },
       {
         'title': 'Top 3 Tokens',
@@ -144,7 +145,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   'priceChange': coin.priceChange24h
                 })
             .toList(),
-        'color': '0xFF333333' // Changed to lighter black
+        'color': cardColor.value.toString(),
       },
       {
         'title': 'Newly Added Tokens',
@@ -156,7 +157,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   'priceChange': coin.priceChange24h
                 })
             .toList(),
-        'color': '0xFF333333' // Changed to lighter black
+        'color': cardColor.value.toString(),
       },
     ];
 
@@ -222,8 +223,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           color: highlight.highlightData
                                                       .marketCapChange24h >=
                                                   0
-                                              ? Colors.green
-                                              : Colors.red,
+                                              ? successColor
+                                              : dangerColor,
                                         ),
                                         Text(
                                           '${highlight.highlightData.marketCapChange24h.toStringAsFixed(2)}%',
@@ -231,8 +232,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                             color: highlight.highlightData
                                                         .marketCapChange24h >=
                                                     0
-                                                ? Colors.green
-                                                : Colors.red,
+                                                ? successColor
+                                                : dangerColor,
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
@@ -297,15 +298,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               ? Icons.arrow_drop_up
                                               : Icons.arrow_drop_down,
                                           color: token['priceChange'] >= 0
-                                              ? Colors.green
-                                              : Colors.red,
+                                              ? successColor
+                                              : dangerColor,
                                         ),
                                         Text(
                                           token['low_24']!,
                                           style: TextStyle(
                                             color: token['priceChange'] >= 0
-                                                ? Colors.green
-                                                : Colors.red,
+                                                ? successColor
+                                                : dangerColor,
                                             fontWeight: FontWeight.w400,
                                           ),
                                         ),
@@ -330,8 +331,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildCurrencyItem(Currency currency) {
     Color priceColor = (currency.priceChangePercentage24H ?? 0) >= 0
-        ? Colors.green
-        : Colors.red;
+        ? successColor
+        : dangerColor;
 
     return GestureDetector(
       onTap: () {
@@ -345,7 +346,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         height: 100,
         margin: const EdgeInsets.only(bottom: 10.0),
         decoration: BoxDecoration(
-          color: const Color(0xFF222224),
+          color: cardColor,
           borderRadius: BorderRadius.circular(4.0),
           boxShadow: [
             BoxShadow(
@@ -383,7 +384,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Text(
                     currency.symbol?.toUpperCase() ?? '',
                     style: const TextStyle(
-                      color: Color.fromRGBO(98, 108, 139, 1),
+                      color: captionColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
