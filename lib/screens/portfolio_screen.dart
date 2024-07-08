@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:rwatrackernew/screens/add_coin.dart';
 
 class PortfolioScreen extends StatefulWidget {
   const PortfolioScreen({super.key});
@@ -61,7 +61,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                   width: 40,
                   height: 40,
                   child: FloatingActionButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: ((context) {
+                        return AddCoinScreen();
+                      })));
+                    },
                     child: Icon(
                       Icons.add,
                       color: Colors.black,
