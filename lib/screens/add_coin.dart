@@ -15,6 +15,7 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
   bool _isLoading = false;
   bool _showSearchResults = true;
   dynamic _selectedCoin;
+  Map<String, dynamic>? _coinDetails;
 
   Future<void> _searchCoins(String query) async {
     if (query.isEmpty) {
@@ -49,6 +50,20 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  Future<void> _getCoinDetails(String id) async {
+    final url = Uri.parse('https://api.coingecko.com/api/v3/coins/$id');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _coinDetails = data;
+      });
+    } else {
+      // Handle the error
+    }
   }
 
   @override
@@ -127,7 +142,8 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
                                   style: TextStyle(color: Colors.white)),
                               subtitle: Text(coin['symbol'],
                                   style: TextStyle(color: Colors.white70)),
-                              onTap: () {
+                              onTap: () async {
+                                await _getCoinDetails(coin['id']);
                                 setState(() {
                                   _selectedCoin = coin;
                                   _showSearchResults = false;
@@ -140,7 +156,7 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
                         ),
                       )
                     : Container(),
-            _selectedCoin != null
+            _selectedCoin != null && _coinDetails != null
                 ? Card(
                     color: Color(0xFF222224),
                     margin: const EdgeInsets.only(top: 16.0),
@@ -176,6 +192,18 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
                           const SizedBox(height: 8.0),
                           Text(
                             'Market Cap Rank: ${_selectedCoin['market_cap_rank'] ?? 'N/A'}',
+                            style: const TextStyle(
+                                fontSize: 18.0, color: Colors.white),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            'Current Price: \$${_coinDetails?['market_data']['current_price']['usd'] ?? 'N/A'}',
+                            style: const TextStyle(
+                                fontSize: 18.0, color: Colors.white),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            'Total Market Cap: \$${_coinDetails?['market_data']['market_cap']['usd'] ?? 'N/A'}',
                             style: const TextStyle(
                                 fontSize: 18.0, color: Colors.white),
                           ),
