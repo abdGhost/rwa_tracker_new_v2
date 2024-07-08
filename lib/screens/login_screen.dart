@@ -73,14 +73,23 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 60,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(20),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(20),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
                       labelText: 'Email',
+                      labelStyle: TextStyle(color: secondaryColor),
                       hintText: 'email@gmail.com',
                       prefixIcon: Icon(
                         Icons.email_outlined,
-                        color: Colors.blueGrey,
+                        color: secondaryColor,
                       ),
                     ),
                     validator: (value) {
@@ -102,12 +111,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
-                      border: const OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
                       labelText: 'Password',
+                      labelStyle: TextStyle(color: secondaryColor),
                       hintText: '*****',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: Colors.blueGrey,
+                        color: secondaryColor,
                       ),
                       suffixIcon: IconButton(
                         onPressed: () {
@@ -116,13 +134,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                         },
                         icon: _passwordVisible
-                            ? const Icon(
+                            ? Icon(
                                 Icons.visibility,
-                                color: Colors.blueGrey,
+                                color: secondaryColor,
                               )
-                            : const Icon(
+                            : Icon(
                                 Icons.visibility_off,
-                                color: Colors.blueGrey,
+                                color: secondaryColor,
                               ),
                       ),
                     ),

@@ -74,14 +74,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 20,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(20),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(20),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
                       labelText: 'Username',
+                      labelStyle: TextStyle(color: secondaryColor),
                       hintText: 'username',
                       prefixIcon: Icon(
                         Icons.person_outline,
-                        color: Colors.blueGrey,
+                        color: secondaryColor,
                       ),
                     ),
                     validator: (value) {
@@ -98,14 +107,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     height: 25,
                   ),
                   TextFormField(
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.all(20),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(20),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
                       labelText: 'Email',
+                      labelStyle: TextStyle(color: secondaryColor),
                       hintText: 'email@gmail.com',
                       prefixIcon: Icon(
                         Icons.email_outlined,
-                        color: Colors.blueGrey,
+                        color: secondaryColor,
                       ),
                     ),
                     validator: (value) {
@@ -127,12 +145,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
-                      border: const OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
                       labelText: 'Password',
+                      labelStyle: TextStyle(color: secondaryColor),
                       hintText: '*****',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: Colors.blueGrey,
+                        color: secondaryColor,
                       ),
                       suffixIcon: IconButton(
                         onPressed: () {
@@ -141,13 +168,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           });
                         },
                         icon: _passwordVisible
-                            ? const Icon(
+                            ? Icon(
                                 Icons.visibility,
-                                color: Colors.blueGrey,
+                                color: secondaryColor,
                               )
-                            : const Icon(
+                            : Icon(
                                 Icons.visibility_off,
-                                color: Colors.blueGrey,
+                                color: secondaryColor,
                               ),
                       ),
                     ),
@@ -170,12 +197,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     obscureText: !_confirmPasswordVisible,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
-                      border: const OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: secondaryColor),
+                      ),
                       labelText: 'Confirm Password',
+                      labelStyle: TextStyle(color: secondaryColor),
                       hintText: '*****',
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: Colors.blueGrey,
+                        color: secondaryColor,
                       ),
                       suffixIcon: IconButton(
                         onPressed: () {
@@ -184,13 +220,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           });
                         },
                         icon: _confirmPasswordVisible
-                            ? const Icon(
+                            ? Icon(
                                 Icons.visibility,
-                                color: Colors.blueGrey,
+                                color: secondaryColor,
                               )
-                            : const Icon(
+                            : Icon(
                                 Icons.visibility_off,
-                                color: Colors.blueGrey,
+                                color: secondaryColor,
                               ),
                       ),
                     ),
