@@ -1,31 +1,32 @@
-// login_screen.dart
+// signup_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../constant/app_color.dart';
 import 'bottom_navigation.dart';
-import 'signup_screen.dart'; // Import the SignUpScreen
+import 'login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
+  bool _confirmPasswordVisible = false;
+  String _username = '';
   String _email = '';
   String _password = '';
+  String _confirmPassword = '';
   bool _isLoading = false;
 
   // void _onSubmit() {
   //   final formValue = _formKey.currentState!.validate();
   //   if (formValue) {
   //     _formKey.currentState!.save();
-  //     _loginApi(context);
+  //     _signupApi(context);
   //   }
   // }
 
@@ -41,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Padding(padding: EdgeInsets.only(top: 100)),
+                  const Padding(padding: EdgeInsets.only(top: 30)),
                   Image.asset(
                     'assets/rwa_logo.png',
                     width: 400,
@@ -51,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 10,
                   ),
                   Text(
-                    'Welcome Back!',
+                    'Create Account',
                     style: GoogleFonts.roboto(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -62,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 2,
                   ),
                   Text(
-                    'Please Login to your account',
+                    'Please fill in the details to create your account',
                     style: GoogleFonts.roboto(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -70,7 +71,31 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 60,
+                    height: 20,
+                  ),
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.all(20),
+                      border: OutlineInputBorder(),
+                      labelText: 'Username',
+                      hintText: 'username',
+                      prefixIcon: Icon(
+                        Icons.person_outline,
+                        color: Colors.blueGrey,
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return " Please enter a valid username";
+                      }
+                      return null;
+                    },
+                    onSaved: (newValue) {
+                      _username = newValue.toString();
+                    },
+                  ),
+                  const SizedBox(
+                    height: 25,
                   ),
                   TextFormField(
                     decoration: const InputDecoration(
@@ -138,20 +163,48 @@ class _LoginScreenState extends State<LoginScreen> {
                       _password = newValue!;
                     }),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'Forget Password',
-                          style: GoogleFonts.roboto(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
-                        ),
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  TextFormField(
+                    obscureText: !_confirmPasswordVisible,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.all(20),
+                      border: const OutlineInputBorder(),
+                      labelText: 'Confirm Password',
+                      hintText: '*****',
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: Colors.blueGrey,
                       ),
-                    ],
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            _confirmPasswordVisible = !_confirmPasswordVisible;
+                          });
+                        },
+                        icon: _confirmPasswordVisible
+                            ? const Icon(
+                                Icons.visibility,
+                                color: Colors.blueGrey,
+                              )
+                            : const Icon(
+                                Icons.visibility_off,
+                                color: Colors.blueGrey,
+                              ),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null ||
+                          value.trim().isEmpty ||
+                          value != _password) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                    onSaved: ((newValue) {
+                      _confirmPassword = newValue!;
+                    }),
                   ),
                   const SizedBox(
                     height: 40,
@@ -162,10 +215,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       // onPressed: _onSubmit,
                       onPressed: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: ((context) {
-                          return const BottomNavigation();
-                        })));
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: ((context) {
+                            return const BottomNavigation();
+                          })));
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
@@ -185,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : const Text(
-                              'Submit',
+                              'Sign Up',
                               style: TextStyle(color: Colors.white),
                             ),
                     ),
@@ -197,12 +253,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) {
-                          return const SignUpScreen();
+                          return const LoginScreen();
                         }),
                       );
                     },
                     child: Text(
-                      'Don\'t have an account? Sign Up',
+                      'Already have an account? Login',
                       style: GoogleFonts.roboto(
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
@@ -219,21 +275,22 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // void _loginApi(BuildContext context) async {
+  // void _signupApi(BuildContext context) async {
   //   setState(() {
   //     _isLoading = true;
   //   });
 
-  //   LoginRequest loginRequest = LoginRequest();
-  //   loginRequest.email = _email.toString();
-  //   loginRequest.password = _password.toString();
-  //   print('${loginRequest.email} ${loginRequest.password}');
-  //   LoginResponse loginResponse = await login(loginRequest);
+  //   SignUpRequest signUpRequest = SignUpRequest();
+  //   signUpRequest.username = _username.toString();
+  //   signUpRequest.email = _email.toString();
+  //   signUpRequest.password = _password.toString();
+  //   print('${signUpRequest.username} ${signUpRequest.email} ${signUpRequest.password}');
+  //   SignUpResponse signUpResponse = await signUp(signUpRequest);
 
-  //   if (loginResponse.status == 'success') {
+  //   if (signUpResponse.status == 'success') {
   //     SharedPreferences preferences = await SharedPreferences.getInstance();
   //     await preferences.setString(
-  //         "token", loginResponse.jwtToken!.accessToken as String);
+  //         "token", signUpResponse.jwtToken!.accessToken as String);
 
   //     await preferences.setString("password", _password);
   //     await preferences.setBool("loggedIn", true);
