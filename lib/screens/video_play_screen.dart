@@ -82,7 +82,7 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
         VideoProgressIndicator(
           _controller,
           allowScrubbing: true,
-          colors: VideoProgressColors(
+          colors: const VideoProgressColors(
             playedColor: Colors.red,
             backgroundColor: Colors.white,
           ),
@@ -100,7 +100,7 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
               ),
               Text(
                 "${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}",
-                style: TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.white),
               ),
               IconButton(
                 icon: Icon(
@@ -130,7 +130,22 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
       appBar: _isFullScreen
           ? null
           : AppBar(
-              title: Text(widget.video.title),
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Color(0xFF34906c),
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              title: Text(
+                widget.video.title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
       body: Center(
         child: _controller.value.isInitialized
@@ -146,16 +161,17 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
                     Positioned(
                       top: 10,
                       left: 20,
-                      right: 20,
-                      child: Container(
-                        padding: const EdgeInsets.all(8.0),
-                        color: Colors.black54,
-                        child: Text(
-                          widget.video.title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                      child: IntrinsicWidth(
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          color: Colors.black54,
+                          child: Text(
+                            widget.video.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),

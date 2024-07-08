@@ -19,7 +19,8 @@ class _VideoItemState extends State<VideoItem> {
         final result = await Navigator.of(context).push(
           MaterialPageRoute(builder: (context) {
             return VideoPlayScreen(
-                video: widget.video); // Pass the video object
+              video: widget.video,
+            );
           }),
         );
         // Force a rebuild to update the progress
@@ -55,7 +56,7 @@ class _VideoItemState extends State<VideoItem> {
                         widget.video.title,
                         style: const TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 5.0),
@@ -66,6 +67,7 @@ class _VideoItemState extends State<VideoItem> {
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                           const SizedBox(width: 20),
@@ -74,6 +76,7 @@ class _VideoItemState extends State<VideoItem> {
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -85,7 +88,8 @@ class _VideoItemState extends State<VideoItem> {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[800],
+                          color: Colors.grey[400],
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 10.0),
