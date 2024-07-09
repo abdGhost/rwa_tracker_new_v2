@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import '../model/blog.dart';
 import '../model/coin.dart';
 import '../model/coin_detail.dart';
 import '../model/coin_graph.dart';
@@ -10,22 +9,22 @@ import '../model/signin/signin_response.dart';
 import '../model/signup/signup_request.dart';
 import '../model/signup/signup_response.dart';
 import '../model/trend.dart';
+import '../model/blog.dart';
 
 class ApiService {
-  final String baseUrl =
-      'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies?page=1&size=10&category=';
+  static const String baseUrl =
+      'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies';
+  static const String trendApiUrl = 'https://rwa-f1623a22e3ed.herokuapp.com';
 
   Future<Coin> fetchCoins() async {
-    final response = await http.get(Uri.parse(baseUrl));
+    final response =
+        await http.get(Uri.parse('$baseUrl?page=1&size=10&category='));
     print(response);
 
     if (response.statusCode == 200) {
       final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
-
-      // Debug print the response to check its structure
       print('Response from API: $jsonResponse');
 
-      // Ensure that the response is a map with a 'currency' key holding the list of coins
       if (jsonResponse.containsKey('currency')) {
         return Coin.fromJson(jsonResponse);
       } else {
@@ -36,45 +35,36 @@ class ApiService {
     }
   }
 
-  Future<CoinDetail> coinDetails(String? name) async {
-    final response = await http.get(Uri.parse(
-        'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/coin/$name'));
-    print(baseUrl);
+  Future<CoinDetail> coinDetails(String currencyId) async {
+    final response = await http.get(Uri.parse('$baseUrl/rwa/coin/$currencyId'));
+    print('************');
+    print(response);
 
     if (response.statusCode == 200) {
-      final jsonResponse = json.decode(response.body) as Map<String, dynamic>;
-
-      // Debug print the response to check its structure
-      print('Response from API: $jsonResponse');
-
-      // Ensure that the response is a map with a 'detail' key holding the coin details
-      if (jsonResponse.containsKey('success') &&
-          jsonResponse.containsKey('detail')) {
-        return CoinDetail.fromJson(jsonResponse);
-      } else {
-        throw Exception('Unexpected response format');
-      }
+      final jsonResponse = jsonDecode(response.body);
+      return CoinDetail.fromJson(jsonResponse);
     } else {
       throw Exception('Failed to load coin details');
     }
   }
 
   Future<CoinGraph> fetchCoinGraphData(String name) async {
-    final response = await http.get(Uri.parse(
-        'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/graph/coinOHLC/$name'));
+    final response =
+        await http.get(Uri.parse('$baseUrl/rwa/graph/coinOHLC/$name'));
+
+    print(response);
 
     if (response.statusCode == 200) {
+      // Print CoinGraph response
+      print('CoinGraph Response: ${response.body}');
       return CoinGraph.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load coin graph data');
     }
   }
 
-  final String highlightApiUrl =
-      'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/highlight';
-
   Future<HighlightModel> fetchHighlightData() async {
-    final response = await http.get(Uri.parse(highlightApiUrl));
+    final response = await http.get(Uri.parse('$baseUrl/rwa/highlight'));
 
     if (response.statusCode == 200) {
       return HighlightModel.fromJson(jsonDecode(response.body));
@@ -82,8 +72,6 @@ class ApiService {
       throw Exception('Failed to load highlight data');
     }
   }
-
-  final String trendApiUrl = 'https://rwa-f1623a22e3ed.herokuapp.com';
 
   Future<TrendResponse> fetchTrends() async {
     final response =
@@ -96,26 +84,19 @@ class ApiService {
     }
   }
 
-  final String blogApiUrl =
-      "https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/blog";
-
   Future<BlogModel> fetchBlogs() async {
-    final response = await http.get(Uri.parse(blogApiUrl));
+    final response =
+        await http.get(Uri.parse('$trendApiUrl/api/currencies/rwa/blog'));
 
     if (response.statusCode == 200) {
-      // If the server returns a 200 OK response, parse the JSON.
       return BlogModel.fromJson(json.decode(response.body));
     } else {
-      // If the server did not return a 200 OK response,
-      // throw an exception.
       throw Exception('Failed to load blogs');
     }
   }
 
-  // Function to call the signup API
   Future<SignupResponse> signup(SignupRequest request) async {
-    final url =
-        Uri.parse('https://rwa-f1623a22e3ed.herokuapp.com/api/users/signup');
+    final url = Uri.parse('$trendApiUrl/api/users/signup');
 
     final response = await http.post(
       url,
@@ -133,8 +114,7 @@ class ApiService {
   }
 
   Future<LoginResponse> login(LoginRequest request) async {
-    final url =
-        Uri.parse('https://rwa-f1623a22e3ed.herokuapp.com/api/users/signin');
+    final url = Uri.parse('$trendApiUrl/api/users/signin');
 
     final response = await http.post(
       url,
@@ -147,7 +127,6 @@ class ApiService {
     if (response.statusCode == 200) {
       return LoginResponse.fromJson(jsonDecode(response.body));
     } else {
-      // Assuming error response is a JSON object
       try {
         final jsonResponse = jsonDecode(response.body);
         return LoginResponse(
@@ -159,7 +138,6 @@ class ApiService {
           email: '',
         );
       } catch (e) {
-        // Handle the case where the response is not a JSON object
         return LoginResponse(
           status: false,
           message: response.body,

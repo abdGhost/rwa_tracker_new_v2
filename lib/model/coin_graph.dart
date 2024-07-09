@@ -15,11 +15,11 @@ class GraphDataPoint {
 
   factory GraphDataPoint.fromJson(List<dynamic> json) {
     return GraphDataPoint(
-      timestamp: json[0],
-      open: json[1],
-      high: json[2],
-      low: json[3],
-      close: json[4],
+      timestamp: json[0] ?? 0,
+      open: json[1]?.toDouble() ?? 0.0,
+      high: json[2]?.toDouble() ?? 0.0,
+      low: json[3]?.toDouble() ?? 0.0,
+      close: json[4]?.toDouble() ?? 0.0,
     );
   }
 
@@ -38,13 +38,20 @@ class CoinGraph {
   });
 
   factory CoinGraph.fromJson(Map<String, dynamic> json) {
-    var graphDataJson = json['graphData'] as List<dynamic>;
+    var graphDataJson = json['graphData'] as List<dynamic>? ?? [];
     List<GraphDataPoint> graphDataList =
         graphDataJson.map((e) => GraphDataPoint.fromJson(e)).toList();
 
     return CoinGraph(
-      success: json['success'],
+      success: json['success'] ?? false, // Default to false if null
       graphData: graphDataList,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'graphData': graphData.map((e) => e.toJson()).toList(),
+    };
   }
 }

@@ -10,9 +10,10 @@ class TrendResponse {
       TrendResponse.fromMap(json.decode(str));
 
   factory TrendResponse.fromMap(Map<String, dynamic> json) => TrendResponse(
-        success: json["success"],
+        success: json["success"] ?? false, // Default to false if null
         trend: List<TrendCoin>.from(
-            json["trend"].map((x) => TrendCoin.fromMap(x))),
+            json["trend"]?.map((x) => TrendCoin.fromMap(x)) ??
+                []), // Handle null case for trend list
       );
 
   String toJson() => json.encode(toMap());
@@ -83,13 +84,13 @@ class TrendCoin {
   factory TrendCoin.fromJson(String str) => TrendCoin.fromMap(json.decode(str));
 
   factory TrendCoin.fromMap(Map<String, dynamic> json) => TrendCoin(
-        id: json["id"],
-        symbol: json["symbol"],
-        name: json["name"],
-        image: json["image"],
+        id: json["id"] ?? '',
+        symbol: json["symbol"] ?? '',
+        name: json["name"] ?? '',
+        image: json["image"] ?? '',
         currentPrice: json["current_price"]?.toDouble() ?? 0.0,
-        marketCap: json["market_cap"],
-        marketCapRank: json["market_cap_rank"],
+        marketCap: json["market_cap"] ?? 0,
+        marketCapRank: json["market_cap_rank"] ?? 0,
         fullyDilutedValuation:
             json["fully_diluted_valuation"]?.toDouble() ?? 0.0,
         totalVolume: json["total_volume"]?.toDouble() ?? 0.0,

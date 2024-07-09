@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class HighlightData {
   final String id;
   final String name;
@@ -21,14 +23,15 @@ class HighlightData {
 
   factory HighlightData.fromJson(Map<String, dynamic> json) {
     return HighlightData(
-      id: json['id'],
-      name: json['name'],
-      marketCap: json['market_cap'].toDouble(),
-      marketCapChange24h: json['market_cap_change_24h'].toDouble(),
-      content: json['content'],
-      top3Coins: List<String>.from(json['top_3_coins']),
-      volume24h: json['volume_24h'].toDouble(),
-      updatedAt: DateTime.parse(json['updated_at']),
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      marketCap: json['market_cap']?.toDouble() ?? 0.0,
+      marketCapChange24h: json['market_cap_change_24h']?.toDouble() ?? 0.0,
+      content: json['content'] ?? '',
+      top3Coins: List<String>.from(json['top_3_coins'] ?? []),
+      volume24h: json['volume_24h']?.toDouble() ?? 0.0,
+      updatedAt: DateTime.parse(
+          json['updated_at'] ?? DateTime.now().toIso8601String()),
     );
   }
 
@@ -57,8 +60,8 @@ class HighlightModel {
 
   factory HighlightModel.fromJson(Map<String, dynamic> json) {
     return HighlightModel(
-      success: json['success'],
-      highlightData: HighlightData.fromJson(json['highlightData']),
+      success: json['success'] ?? false, // Default to false if null
+      highlightData: HighlightData.fromJson(json['highlightData'] ?? {}),
     );
   }
 

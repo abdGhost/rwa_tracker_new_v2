@@ -1,18 +1,17 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:rwatrackernew/model/coin_detail.dart';
-
 import '../api/api_service.dart';
+import '../model/coin_detail.dart';
 import '../model/coin_graph.dart';
 
 class CoinDetailsScreen extends StatefulWidget {
   final String currencyId;
 
   const CoinDetailsScreen({
-    super.key,
+    Key? key,
     required this.currencyId,
-  });
+  }) : super(key: key);
 
   @override
   State<CoinDetailsScreen> createState() => _CoinDetailsScreenState();
@@ -59,13 +58,13 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
               return const Text(
                 'Error',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
               );
             } else if (snapshot.hasData) {
               return Text(
-                snapshot.data?.detail?.name ?? 'Coin Name',
+                snapshot.data?.detail.name ?? 'Coin Name',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
@@ -84,323 +83,100 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
         ),
       ),
       body: SingleChildScrollView(
-        child: FutureBuilder<CoinDetail>(
-          future: futureCoin,
+        child: FutureBuilder<CoinGraph>(
+          future: futureCoinGraph,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return const Center(child: Text('Error loading coin details'));
+              return const Center(child: Text('Error loading graph data'));
             } else if (snapshot.hasData) {
-              final coinDetail = snapshot.data!;
+              final coinGraph = snapshot.data!;
               return Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Price'.toUpperCase(),
-                              style: const TextStyle(
-                                color: Color.fromRGBO(98, 108, 139, 1),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
+                    const Text(
+                      'Graph Data',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 300,
+                      child: LineChart(
+                        LineChartData(
+                          lineBarsData: [
+                            LineChartBarData(
+                              spots: coinGraph.graphData
+                                  .map((dataPoint) => FlSpot(
+                                      dataPoint.timestamp.toDouble(),
+                                      dataPoint.close))
+                                  .toList(),
+                              isCurved: true,
+                              colors: [Colors.green],
+                              barWidth: 2,
+                              belowBarData: BarAreaData(
+                                show: true,
+                                colors: [Colors.green.withOpacity(0.3)],
                               ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.currentPrice['usd']}'
-                                  .toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              dotData: FlDotData(show: false),
                             ),
                           ],
+                          titlesData: FlTitlesData(
+                            leftTitles: SideTitles(showTitles: false),
+                            bottomTitles: SideTitles(
+                              showTitles: true,
+                              getTextStyles: (context, value) =>
+                                  const TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                              getTitles: (value) {
+                                DateTime date =
+                                    DateTime.fromMillisecondsSinceEpoch(
+                                        value.toInt());
+                                return DateFormat('ha').format(date);
+                              },
+                              reservedSize: 40,
+                              margin: 8,
+                            ),
+                            rightTitles: SideTitles(
+                              showTitles: true,
+                              getTextStyles: (context, value) =>
+                                  const TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                              getTitles: (value) {
+                                double closest =
+                                    coinGraph.graphData.first.close;
+                                for (var dataPoint in coinGraph.graphData) {
+                                  if ((dataPoint.close - value).abs() <
+                                      (closest - value).abs()) {
+                                    closest = dataPoint.close;
+                                  }
+                                }
+                                return '\$${closest.toStringAsFixed(2)}';
+                              },
+                              reservedSize: 40,
+                              margin: 8,
+                            ),
+                            topTitles: SideTitles(showTitles: false),
+                          ),
+                          gridData: FlGridData(show: false),
+                          borderData: FlBorderData(show: false),
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Market Cap'.toUpperCase(),
-                              style: const TextStyle(
-                                color: Color.fromRGBO(98, 108, 139, 1),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.marketCap['usd']}'
-                                  .toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Volume (24h)'.toUpperCase(),
-                              style: const TextStyle(
-                                color: Color.fromRGBO(98, 108, 139, 1),
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.totalVolume['usd']}'
-                                  .toString(),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    FutureBuilder<CoinGraph>(
-                      future: futureCoinGraph,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return const Center(
-                              child: Text('Error loading graph data'));
-                        } else if (snapshot.hasData) {
-                          final coinGraph = snapshot.data!;
-                          return SizedBox(
-                            width: double.infinity,
-                            height: 300,
-                            child: LineChart(
-                              LineChartData(
-                                lineBarsData: [
-                                  LineChartBarData(
-                                    spots: coinGraph.graphData
-                                        .map((dataPoint) => FlSpot(
-                                            dataPoint.timestamp.toDouble(),
-                                            dataPoint.close))
-                                        .toList(),
-                                    isCurved: true,
-                                    colors: [Colors.green],
-                                    barWidth: 2,
-                                    belowBarData: BarAreaData(
-                                      show: true,
-                                      colors: [Colors.green.withOpacity(0.3)],
-                                    ),
-                                    dotData: FlDotData(show: false),
-                                  ),
-                                ],
-                                titlesData: FlTitlesData(
-                                  leftTitles: SideTitles(showTitles: false),
-                                  bottomTitles: SideTitles(
-                                    showTitles: true,
-                                    getTextStyles: (context, value) =>
-                                        const TextStyle(
-                                            color: Colors.white, fontSize: 12),
-                                    getTitles: (value) {
-                                      DateTime date =
-                                          DateTime.fromMillisecondsSinceEpoch(
-                                              value.toInt());
-                                      String formattedDate =
-                                          DateFormat('ha').format(date);
-                                      return formattedDate;
-                                    },
-                                    reservedSize: 40,
-                                    margin: 8,
-                                  ),
-                                  rightTitles: SideTitles(
-                                    showTitles: true,
-                                    getTextStyles: (context, value) =>
-                                        const TextStyle(
-                                            color: Colors.white, fontSize: 12),
-                                    getTitles: (value) {
-                                      double closest =
-                                          coinGraph.graphData.first.close;
-                                      for (var dataPoint
-                                          in coinGraph.graphData) {
-                                        if ((dataPoint.close - value).abs() <
-                                            (closest - value).abs()) {
-                                          closest = dataPoint.close;
-                                        }
-                                      }
-                                      return '\$${closest.toStringAsFixed(2)}';
-                                    },
-                                    reservedSize: 40,
-                                    margin: 8,
-                                  ),
-                                  topTitles: SideTitles(showTitles: false),
-                                ),
-                                gridData: FlGridData(show: false),
-                                borderData: FlBorderData(show: false),
-                              ),
-                            ),
-                          );
-                        } else {
-                          return const Center(
-                              child: Text('No graph data available'));
-                        }
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
+                    // Static Information Section
                     Column(
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Market Cap Rank',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              '#${coinDetail.detail!.marketCapRank.toString()}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
+                        _buildRow('Static Info 1', 'Value 1'),
                         const Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Market Cap',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.marketCap['usd']}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Fully Diluted Value',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.fullyDilutedValuation['usd']}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              '24 High',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.high24H['usd']}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              '24 Low',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.low24H['usd']}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Available Supply',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.circulatingSupply}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const Divider(),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Total Supply',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            Text(
-                              '\$${coinDetail.detail!.marketData!.totalSupply}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                          ],
-                        ),
+                        _buildRow('Static Info 2', 'Value 2'),
                         const Divider(),
                       ],
                     ),
@@ -408,11 +184,35 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                 ),
               );
             } else {
-              return const Center(child: Text('No coin details available'));
+              return const Center(child: Text('No graph data available'));
             }
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildRow(String title, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
+          ),
+        ),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Colors.white,
+          ),
+        ),
+      ],
     );
   }
 }
