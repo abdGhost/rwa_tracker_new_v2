@@ -185,12 +185,31 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                                   'Error loading data: ${snapshot.error}'));
                         } else if (snapshot.hasData) {
                           final coinDetail = snapshot.data!;
-                          final marketCap =
-                              coinDetail.detail.marketData.marketCap['usd'] ??
-                                  0.0;
+                          final marketData = coinDetail.detail.marketData;
+                          final marketCap = marketData.marketCap['usd'] ?? 0.0;
                           final totalVolume =
-                              coinDetail.detail.marketData.totalVolume['usd'] ??
-                                  0.0;
+                              marketData.totalVolume['usd'] ?? 0.0;
+                          final currentPrice =
+                              marketData.currentPrice['usd'] ?? 0.0;
+                          final fullyDilutedValuation =
+                              marketData.fullyDilutedValuation['usd'] ?? 0.0;
+                          final high24h = marketData.high24h['usd'] ?? 0.0;
+                          final low24h = marketData.low24h['usd'] ?? 0.0;
+                          final circulatingSupply =
+                              marketData.circulatingSupply;
+                          final totalSupply = marketData.totalSupply;
+                          final ath = marketData.ath['usd'] ?? 0.0;
+                          final athDate =
+                              marketData.athDate['usd']?.toIso8601String() ??
+                                  '';
+                          final athChangePercentage =
+                              marketData.athChangePercentage['usd'] ?? 0.0;
+                          final atl = marketData.atl['usd'] ?? 0.0;
+                          final atlDate =
+                              marketData.atlDate['usd']?.toIso8601String() ??
+                                  '';
+                          final atlChangePercentage =
+                              marketData.atlChangePercentage['usd'] ?? 0.0;
                           final homepage =
                               coinDetail.detail.links.homepage.isNotEmpty
                                   ? coinDetail.detail.links.homepage[0]
@@ -199,9 +218,40 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              _buildRow('Current Price', '\$$currentPrice'),
+                              const Divider(),
                               _buildRow('Market Cap', '\$$marketCap'),
                               const Divider(),
                               _buildRow('Total Volume', '\$$totalVolume'),
+                              const Divider(),
+                              _buildRow('Market Cap Rank',
+                                  marketData.marketCapRank.toString()),
+                              const Divider(),
+                              _buildRow('Fully Diluted Valuation',
+                                  '\$$fullyDilutedValuation'),
+                              const Divider(),
+                              _buildRow('24h High', '\$$high24h'),
+                              const Divider(),
+                              _buildRow('24h Low', '\$$low24h'),
+                              const Divider(),
+                              _buildRow('Circulating Supply',
+                                  circulatingSupply.toString()),
+                              const Divider(),
+                              _buildRow('Total Supply', totalSupply.toString()),
+                              const Divider(),
+                              _buildRow('All-time High', '\$$ath'),
+                              const Divider(),
+                              _buildRow('Since All-time High',
+                                  '${athChangePercentage.toStringAsFixed(2)}%'),
+                              const Divider(),
+                              _buildRow('All-time High Date', athDate),
+                              const Divider(),
+                              _buildRow('All-time Low', '\$$atl'),
+                              const Divider(),
+                              _buildRow('Since All-time Low',
+                                  '${atlChangePercentage.toStringAsFixed(2)}%'),
+                              const Divider(),
+                              _buildRow('All-time Low Date', atlDate),
                               const Divider(),
                               _buildRow('Website', homepage),
                               const Divider(),
