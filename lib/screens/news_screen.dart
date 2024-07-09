@@ -43,6 +43,9 @@ class _NewsScreenState extends State<NewsScreen> {
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else if (snapshot.hasData) {
+              if (!snapshot.data!.success) {
+                return const Text('Failed to load data');
+              }
               return ListView.builder(
                 itemCount: snapshot.data?.blog.length,
                 itemBuilder: (context, index) {

@@ -63,8 +63,6 @@ class ApiService {
     final response =
         await http.get(Uri.parse('$baseUrl/rwa/graph/coinOHLC/$name'));
 
-    print(response);
-
     if (response.statusCode == 200) {
       // Print CoinGraph response
       print('CoinGraph Response: ${response.body}');
@@ -96,8 +94,9 @@ class ApiService {
   }
 
   Future<BlogModel> fetchBlogs() async {
-    final response =
-        await http.get(Uri.parse('$trendApiUrl/api/currencies/rwa/blog'));
+    final response = await http.get(Uri.parse(
+        'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies/rwa/blog'));
+    print(response.body);
 
     if (response.statusCode == 200) {
       return BlogModel.fromJson(json.decode(response.body));

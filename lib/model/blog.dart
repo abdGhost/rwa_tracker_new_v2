@@ -6,8 +6,11 @@ class BlogModel {
 
   factory BlogModel.fromJson(Map<String, dynamic> json) {
     return BlogModel(
-      success: json['success'],
-      blog: List<Blog>.from(json['blog'].map((x) => Blog.fromJson(x))),
+      success:
+          json['status'] ?? false, // Assuming 'status' is the correct field
+      blog: json['blog'] != null
+          ? List<Blog>.from(json['blog'].map((x) => Blog.fromJson(x)))
+          : [],
     );
   }
 
