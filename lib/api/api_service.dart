@@ -35,10 +35,21 @@ class ApiService {
     }
   }
 
+  // Future<CoinDetail> coinDetails(String currencyId) async {
+  //   final response = await http.get(Uri.parse('$baseUrl/rwa/coin/$currencyId'));
+  //   print('************');
+  //   print(response);
+
+  //   if (response.statusCode == 200) {
+  //     final jsonResponse = jsonDecode(response.body);
+  //     return CoinDetail.fromJson(jsonResponse);
+  //   } else {
+  //     throw Exception('Failed to load coin details');
+  //   }
+  // }
+
   Future<CoinDetail> coinDetails(String currencyId) async {
     final response = await http.get(Uri.parse('$baseUrl/rwa/coin/$currencyId'));
-    print('************');
-    print(response);
 
     if (response.statusCode == 200) {
       final jsonResponse = jsonDecode(response.body);

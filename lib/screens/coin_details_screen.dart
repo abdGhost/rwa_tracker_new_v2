@@ -171,14 +171,46 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // Static Information Section
-                    Column(
-                      children: [
-                        _buildRow('Static Info 1', 'Value 1'),
-                        const Divider(),
-                        _buildRow('Static Info 2', 'Value 2'),
-                        const Divider(),
-                      ],
+                    // Coin Details Section
+                    FutureBuilder<CoinDetail>(
+                      future: futureCoin,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(
+                              child: Text(
+                                  'Error loading data: ${snapshot.error}'));
+                        } else if (snapshot.hasData) {
+                          final coinDetail = snapshot.data!;
+                          final marketCap =
+                              coinDetail.detail.marketData.marketCap['usd'] ??
+                                  0.0;
+                          final totalVolume =
+                              coinDetail.detail.marketData.totalVolume['usd'] ??
+                                  0.0;
+                          final homepage =
+                              coinDetail.detail.links.homepage.isNotEmpty
+                                  ? coinDetail.detail.links.homepage[0]
+                                  : 'No website available';
+
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildRow('Market Cap', '\$$marketCap'),
+                              const Divider(),
+                              _buildRow('Total Volume', '\$$totalVolume'),
+                              const Divider(),
+                              _buildRow('Website', homepage),
+                              const Divider(),
+                            ],
+                          );
+                        } else {
+                          return const Center(child: Text('No data available'));
+                        }
+                      },
                     ),
                   ],
                 ),
