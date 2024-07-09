@@ -46,8 +46,8 @@ class MyApp extends StatelessWidget {
               ),
             ),
       ),
-      home: const BottomNavigation(),
-      // home: SplashScreen(),
+      // home: const BottomNavigation(),
+      home: SplashScreen(),
     );
   }
 }

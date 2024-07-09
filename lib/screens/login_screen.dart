@@ -1,11 +1,12 @@
-// login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:rwatrackernew/api/api_service.dart';
 import '../constant/app_color.dart';
+import '../model/signin/signin_request.dart';
+import '../model/signin/signin_response.dart';
 import 'bottom_navigation.dart';
-import 'signup_screen.dart'; // Import the SignUpScreen
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,18 +17,80 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _passwordVisible = false;
-  String _email = '';
-  String _password = '';
   bool _isLoading = false;
 
-  // void _onSubmit() {
-  //   final formValue = _formKey.currentState!.validate();
-  //   if (formValue) {
-  //     _formKey.currentState!.save();
-  //     _loginApi(context);
-  //   }
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    if (token != null) {
+      // Navigate to the BottomNavigation screen if the token is available
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) {
+        return const BottomNavigation();
+      }));
+    }
+  }
+
+  void _onSubmit() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      await _loginApi(context);
+    }
+  }
+
+  Future<void> _loginApi(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    LoginRequest loginRequest = LoginRequest(
+      email: _emailController.text,
+      password: _passwordController.text,
+    );
+
+    try {
+      LoginResponse loginResponse = await ApiService().login(loginRequest);
+      print(loginResponse.toJson());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(loginResponse.message)),
+      );
+
+      if (loginResponse.status) {
+        // Save token and user details in local storage
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', loginResponse.token);
+        await prefs.setString('user_id', loginResponse.id);
+        await prefs.setString('user_name', loginResponse.name);
+        await prefs.setString('user_email', loginResponse.email);
+
+        // Navigate to the BottomNavigation screen if login is successful
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (context) {
+          return const BottomNavigation();
+        }));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('An unexpected error occurred. Please try again later.')),
+      );
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const Padding(padding: EdgeInsets.only(top: 100)),
+                  const Padding(padding: EdgeInsets.only(top: 30)),
                   Image.asset(
                     'assets/rwa_logo.png',
                     width: 400,
@@ -51,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 10,
                   ),
                   Text(
-                    'Welcome Back!',
+                    'Login',
                     style: GoogleFonts.roboto(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -62,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 2,
                   ),
                   Text(
-                    'Please Login to your account',
+                    'Please enter your email and password to log in',
                     style: GoogleFonts.roboto(
                       fontSize: 14,
                       fontWeight: FontWeight.w400,
@@ -70,9 +133,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 60,
+                    height: 20,
                   ),
                   TextFormField(
+                    controller: _emailController,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
                       border: OutlineInputBorder(
@@ -96,18 +160,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value == null ||
                           value.trim().isEmpty ||
                           !value.contains('@')) {
-                        return " Please enter a valid email address";
+                        return "Please enter a valid email address";
                       }
                       return null;
-                    },
-                    onSaved: (newValue) {
-                      _email = newValue.toString();
                     },
                   ),
                   const SizedBox(
                     height: 25,
                   ),
                   TextFormField(
+                    controller: _passwordController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
@@ -152,24 +214,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       return null;
                     },
-                    onSaved: ((newValue) {
-                      _password = newValue!;
-                    }),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {},
-                        child: Text(
-                          'Forget Password',
-                          style: GoogleFonts.roboto(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                   const SizedBox(
                     height: 40,
@@ -178,13 +222,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 350,
                     height: 50,
                     child: ElevatedButton(
-                      // onPressed: _onSubmit,
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: ((context) {
-                          return const BottomNavigation();
-                        })));
-                      },
+                      onPressed: _onSubmit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             themePrimaryColor, // Use the color here
@@ -203,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             )
                           : const Text(
-                              'Submit',
+                              'Login',
                               style: TextStyle(color: Colors.white),
                             ),
                     ),
@@ -236,33 +274,4 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
-  // void _loginApi(BuildContext context) async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-
-  //   LoginRequest loginRequest = LoginRequest();
-  //   loginRequest.email = _email.toString();
-  //   loginRequest.password = _password.toString();
-  //   print('${loginRequest.email} ${loginRequest.password}');
-  //   LoginResponse loginResponse = await login(loginRequest);
-
-  //   if (loginResponse.status == 'success') {
-  //     SharedPreferences preferences = await SharedPreferences.getInstance();
-  //     await preferences.setString(
-  //         "token", loginResponse.jwtToken!.accessToken as String);
-
-  //     await preferences.setString("password", _password);
-  //     await preferences.setBool("loggedIn", true);
-
-  //     // ignore: use_build_context_synchronously
-  //     Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-  //       return const BottomNavigation();
-  //     })));
-  //   }
-  //   setState(() {
-  //     _isLoading = false;
-  //   });
-  // }
 }

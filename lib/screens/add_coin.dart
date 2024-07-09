@@ -20,6 +20,7 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
   Map<String, dynamic>? _coinDetails;
   String _selectedDuration = '1 year';
   double _annualGrowthRate = 0.0; // Store the calculated annual growth rate
+  double _dailyVolatility = 0.0; // Store the daily volatility
 
   Future<void> _searchCoins(String query) async {
     if (query.isEmpty) {
@@ -79,14 +80,32 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
       final data = json.decode(response.body);
       List<dynamic> prices = data['prices'];
       if (prices.isNotEmpty) {
-        double initialPrice = prices.first[1];
-        double finalPrice = prices.last[1];
+        double initialPrice = prices.first[1].toDouble();
+        double finalPrice = prices.last[1].toDouble();
         _annualGrowthRate = (finalPrice - initialPrice) / initialPrice;
+
+        // Calculate daily returns and volatility
+        List<double> dailyReturns = [];
+        for (int i = 1; i < prices.length; i++) {
+          double dailyReturn =
+              (prices[i][1].toDouble() - prices[i - 1][1].toDouble()) /
+                  prices[i - 1][1].toDouble();
+          dailyReturns.add(dailyReturn);
+        }
+        double mean =
+            dailyReturns.reduce((a, b) => a + b) / dailyReturns.length;
+        double variance = dailyReturns
+                .map((r) => pow(r - mean, 2).toDouble())
+                .reduce((a, b) => a + b) /
+            dailyReturns.length;
+        _dailyVolatility = sqrt(variance);
       } else {
         _annualGrowthRate = 0.0;
+        _dailyVolatility = 0.0;
       }
     } else {
       _annualGrowthRate = 0.0;
+      _dailyVolatility = 0.0;
       // Handle the error
     }
   }
@@ -94,6 +113,26 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
   double _calculatePrediction(double amount, String duration) {
     int years = int.parse(duration.split(' ')[0]);
     return amount * pow((1 + _annualGrowthRate), years);
+  }
+
+  double _nextGaussian() {
+    final Random rand = Random();
+    double u1 = rand.nextDouble();
+    double u2 = rand.nextDouble();
+    return sqrt(-2.0 * log(u1)) * cos(2.0 * pi * u2);
+  }
+
+  List<double> _runMonteCarloSimulation(double initialPrice, int days) {
+    List<double> pricePath = [initialPrice];
+    Random rand = Random();
+
+    for (int i = 1; i <= days; i++) {
+      double dailyReturn =
+          _annualGrowthRate / 365 + _dailyVolatility * _nextGaussian();
+      double newPrice = pricePath.last * (1 + dailyReturn);
+      pricePath.add(newPrice);
+    }
+    return pricePath;
   }
 
   @override
@@ -317,13 +356,32 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
                                         _investmentController.text);
                                     double prediction = _calculatePrediction(
                                         amount, _selectedDuration);
+
+                                    // Run Monte Carlo simulation
+                                    List<double> simulationResults =
+                                        _runMonteCarloSimulation(
+                                            (_coinDetails?['market_data']
+                                                    ['current_price']['usd'])
+                                                .toDouble(),
+                                            int.parse(_selectedDuration
+                                                    .split(' ')[0]) *
+                                                365);
+
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
                                         return AlertDialog(
                                           title: Text('Investment Prediction'),
-                                          content: Text(
-                                              'Your investment of \$${amount.toStringAsFixed(2)} could grow to \$${prediction.toStringAsFixed(2)} in $_selectedDuration.'),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                  'Your investment of \$${amount.toStringAsFixed(2)} could grow to \$${prediction.toStringAsFixed(2)} in $_selectedDuration.'),
+                                              SizedBox(height: 16.0),
+                                              Text(
+                                                  'Monte Carlo Simulation Result: \$${simulationResults.last.toStringAsFixed(2)}')
+                                            ],
+                                          ),
                                           actions: <Widget>[
                                             TextButton(
                                               child: Text('Close'),

@@ -20,33 +20,23 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _animationController;
 
   Future<void> _checkIsLogin() async {
-    String? token;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    token = prefs.getString('token');
+    String? token = prefs.getString('token');
     print('token -- $token');
+
+    if (token != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const BottomNavigation()),
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
 
   void navigatedTo() async {
-    // SharedPreferences preferences = await SharedPreferences.getInstance();
-    // if (preferences.getBool('loggedIn') == true) {
-    //   Navigator.of(context).push(
-    //     MaterialPageRoute(
-    //       builder: ((context) => const BottomNavigation()),
-    //     ),
-    //   );
-    // } else {
-    //   Navigator.of(context).push(
-    //     MaterialPageRoute(
-    //       builder: ((context) => const LoginScreen()),
-    //     ),
-    //   );
-    // }
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: ((context) => const LoginScreen()),
-      ),
-    );
+    await _checkIsLogin();
   }
 
   startTimer() {
@@ -57,7 +47,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-    _checkIsLogin();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -88,7 +77,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   void dispose() {
-    super.dispose();
     _animationController.dispose();
+    super.dispose();
   }
 }

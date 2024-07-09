@@ -5,6 +5,10 @@ import '../model/coin.dart';
 import '../model/coin_detail.dart';
 import '../model/coin_graph.dart';
 import '../model/hightlight.dart';
+import '../model/signin/signin_request.dart';
+import '../model/signin/signin_response.dart';
+import '../model/signup/signup_request.dart';
+import '../model/signup/signup_response.dart';
 import '../model/trend.dart';
 
 class ApiService {
@@ -105,6 +109,66 @@ class ApiService {
       // If the server did not return a 200 OK response,
       // throw an exception.
       throw Exception('Failed to load blogs');
+    }
+  }
+
+  // Function to call the signup API
+  Future<SignupResponse> signup(SignupRequest request) async {
+    final url =
+        Uri.parse('https://rwa-f1623a22e3ed.herokuapp.com/api/users/signup');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(request.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      return SignupResponse.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to sign up');
+    }
+  }
+
+  Future<LoginResponse> login(LoginRequest request) async {
+    final url =
+        Uri.parse('https://rwa-f1623a22e3ed.herokuapp.com/api/users/signin');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(request.toJson()),
+    );
+
+    if (response.statusCode == 200) {
+      return LoginResponse.fromJson(jsonDecode(response.body));
+    } else {
+      // Assuming error response is a JSON object
+      try {
+        final jsonResponse = jsonDecode(response.body);
+        return LoginResponse(
+          status: jsonResponse['success'] ?? false,
+          message: jsonResponse['message'] ?? 'Unknown error',
+          id: '',
+          name: '',
+          token: '',
+          email: '',
+        );
+      } catch (e) {
+        // Handle the case where the response is not a JSON object
+        return LoginResponse(
+          status: false,
+          message: response.body,
+          id: '',
+          name: '',
+          token: '',
+          email: '',
+        );
+      }
     }
   }
 }

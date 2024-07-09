@@ -1,9 +1,72 @@
-// signup_screen.dart
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import '../constant/app_color.dart';
 import 'bottom_navigation.dart';
 import 'login_screen.dart';
+
+// Model for Signup Request
+class SignupRequest {
+  final String email;
+  final String userName;
+  final String password;
+  final String confirmPassword;
+
+  SignupRequest({
+    required this.email,
+    required this.userName,
+    required this.password,
+    required this.confirmPassword,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'userName': userName,
+      'password': password,
+      'confirmPassword': confirmPassword,
+    };
+  }
+}
+
+// Model for Signup Response
+class SignupResponse {
+  final bool status;
+  final String message;
+
+  SignupResponse({
+    required this.status,
+    required this.message,
+  });
+
+  factory SignupResponse.fromJson(Map<String, dynamic> json) {
+    return SignupResponse(
+      status: json['status'],
+      message: json['message'],
+    );
+  }
+}
+
+// Function to call the signup API
+Future<SignupResponse> signup(SignupRequest request) async {
+  final url =
+      Uri.parse('https://rwa-f1623a22e3ed.herokuapp.com/api/users/signup');
+
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(request.toJson()),
+  );
+
+  if (response.statusCode == 200) {
+    return SignupResponse.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to sign up');
+  }
+}
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -14,21 +77,63 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _passwordVisible = false;
   bool _confirmPasswordVisible = false;
   String _username = '';
   String _email = '';
-  String _password = '';
-  String _confirmPassword = '';
   bool _isLoading = false;
 
-  // void _onSubmit() {
-  //   final formValue = _formKey.currentState!.validate();
-  //   if (formValue) {
-  //     _formKey.currentState!.save();
-  //     _signupApi(context);
-  //   }
-  // }
+  void _onSubmit() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      await _signupApi(context);
+    }
+  }
+
+  Future<void> _signupApi(BuildContext context) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    SignupRequest signupRequest = SignupRequest(
+      email: _email,
+      userName: _username,
+      password: _passwordController.text,
+      confirmPassword: _confirmPasswordController.text,
+    );
+
+    try {
+      SignupResponse signupResponse = await signup(signupRequest);
+
+      if (signupResponse.status) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(signupResponse.message)),
+        );
+
+        // Navigate to the BottomNavigation screen if signup is successful
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (context) {
+          return const BottomNavigation();
+        }));
+      } else {
+        // Show error message if signup fails
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(signupResponse.message)),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Signup failed: $e')),
+      );
+    }
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +205,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                     onSaved: (newValue) {
-                      _username = newValue.toString();
+                      _username = newValue!;
                     },
                   ),
                   const SizedBox(
@@ -135,13 +240,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                     onSaved: (newValue) {
-                      _email = newValue.toString();
+                      _email = newValue!;
                     },
                   ),
                   const SizedBox(
                     height: 25,
                   ),
                   TextFormField(
+                    controller: _passwordController,
                     obscureText: !_passwordVisible,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
@@ -187,13 +293,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       return null;
                     },
                     onSaved: ((newValue) {
-                      _password = newValue!;
+                      _passwordController.text = newValue!;
                     }),
                   ),
                   const SizedBox(
                     height: 25,
                   ),
                   TextFormField(
+                    controller: _confirmPasswordController,
                     obscureText: !_confirmPasswordVisible,
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.all(20),
@@ -233,13 +340,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     validator: (value) {
                       if (value == null ||
                           value.trim().isEmpty ||
-                          value != _password) {
+                          value != _passwordController.text) {
                         return 'Passwords do not match';
                       }
                       return null;
                     },
                     onSaved: ((newValue) {
-                      _confirmPassword = newValue!;
+                      _confirmPasswordController.text = newValue!;
                     }),
                   ),
                   const SizedBox(
@@ -249,16 +356,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     width: 350,
                     height: 50,
                     child: ElevatedButton(
-                      // onPressed: _onSubmit,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: ((context) {
-                            return const BottomNavigation();
-                          })));
-                        }
-                      },
+                      onPressed: _onSubmit,
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             themePrimaryColor, // Use the color here
@@ -310,34 +408,4 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
-
-  // void _signupApi(BuildContext context) async {
-  //   setState(() {
-  //     _isLoading = true;
-  //   });
-
-  //   SignUpRequest signUpRequest = SignUpRequest();
-  //   signUpRequest.username = _username.toString();
-  //   signUpRequest.email = _email.toString();
-  //   signUpRequest.password = _password.toString();
-  //   print('${signUpRequest.username} ${signUpRequest.email} ${signUpRequest.password}');
-  //   SignUpResponse signUpResponse = await signUp(signUpRequest);
-
-  //   if (signUpResponse.status == 'success') {
-  //     SharedPreferences preferences = await SharedPreferences.getInstance();
-  //     await preferences.setString(
-  //         "token", signUpResponse.jwtToken!.accessToken as String);
-
-  //     await preferences.setString("password", _password);
-  //     await preferences.setBool("loggedIn", true);
-
-  //     // ignore: use_build_context_synchronously
-  //     Navigator.of(context).push(MaterialPageRoute(builder: ((context) {
-  //       return const BottomNavigation();
-  //     })));
-  //   }
-  //   setState(() {
-  //     _isLoading = false;
-  //   });
-  // }
 }
