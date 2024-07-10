@@ -17,11 +17,15 @@ class CoinDetail {
 
 class Detail {
   String name;
+  String symbol;
+  String image;
   MarketData marketData;
   Links links;
 
   Detail({
     required this.name,
+    required this.symbol,
+    required this.image,
     required this.marketData,
     required this.links,
   });
@@ -29,6 +33,8 @@ class Detail {
   factory Detail.fromJson(Map<String, dynamic> json) {
     return Detail(
       name: json['name'],
+      symbol: json['symbol'],
+      image: json['image']['large'],
       marketData: MarketData.fromJson(json['market_data']),
       links: Links.fromJson(json['links']),
     );
@@ -51,6 +57,7 @@ class MarketData {
   Map<String, double> atl;
   Map<String, double> atlChangePercentage;
   Map<String, DateTime> atlDate;
+  double priceChangePercentage24h; // Added priceChangePercentage24h property
 
   MarketData({
     required this.currentPrice,
@@ -68,6 +75,7 @@ class MarketData {
     required this.atl,
     required this.atlChangePercentage,
     required this.atlDate,
+    required this.priceChangePercentage24h, // Initialize priceChangePercentage24h
   });
 
   factory MarketData.fromJson(Map<String, dynamic> json) {
@@ -87,6 +95,8 @@ class MarketData {
       atl: _parseToDoubleMap(json['atl']),
       atlChangePercentage: _parseToDoubleMap(json['atl_change_percentage']),
       atlDate: _parseToDateTimeMap(json['atl_date']),
+      priceChangePercentage24h: json['price_change_percentage_24h']
+          .toDouble(), // Parse priceChangePercentage24h from JSON
     );
   }
 

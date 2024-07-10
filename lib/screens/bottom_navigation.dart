@@ -16,49 +16,56 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   var _index = 0;
-  final _screen = [
+  final _screens = [
     const DashboardScreen(),
     const PortfolioScreen(),
     const NewsScreen(),
     const VideoScreen(),
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screen[_index],
+      body: _screens[_index],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFF348f6c),
+        backgroundColor: const Color(0xFF348f6c),
         currentIndex: _index,
         onTap: (index) {
           setState(() {
             _index = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_customize),
+            icon: Icon(Icons.dashboard_customize,
+                color: _index == 0 ? Colors.white : Colors.white70),
             label: 'DashBoard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard_sharp),
+            icon: Icon(Icons.leaderboard_sharp,
+                color: _index == 1 ? Colors.white : Colors.white70),
             label: 'Portfolio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
+            icon: Icon(Icons.list,
+                color: _index == 2 ? Colors.white : Colors.white70),
             label: 'Blog',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.video_collection),
+            icon: Icon(Icons.video_collection,
+                color: _index == 3 ? Colors.white : Colors.white70),
             label: 'Video',
           ),
         ],
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
-        iconSize: 20,
-        selectedFontSize: 12,
-        unselectedFontSize: 10,
-        selectedLabelStyle: GoogleFonts.roboto(),
+        iconSize: 24,
+        selectedFontSize: 14,
+        unselectedFontSize: 12,
+        selectedLabelStyle: GoogleFonts.roboto(
+          fontWeight: FontWeight.w500,
+        ),
         unselectedLabelStyle: GoogleFonts.roboto(),
       ),
     );
