@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rwatrackernew/screens/add_coin_new.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:rwatrackernew/screens/add_coin.dart';
 
 class PortfolioScreen extends StatefulWidget {
@@ -9,13 +11,28 @@ class PortfolioScreen extends StatefulWidget {
 }
 
 class _PortfolioScreenState extends State<PortfolioScreen> {
+  String? _userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName();
+  }
+
+  Future<void> _loadUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userName = prefs.getString('user_name') ?? 'User';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromRGBO(20, 20, 22, 1.0),
       appBar: AppBar(
         elevation: 0,
-        title: Text(
+        title: const Text(
           'Portfolio',
           style: TextStyle(
             color: Colors.white,
@@ -39,7 +56,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Hello',
                         style: TextStyle(
                           fontSize: 14,
@@ -47,8 +64,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                         ),
                       ),
                       Text(
-                        'James Durant',
-                        style: TextStyle(
+                        _userName ?? '',
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
@@ -56,22 +73,24 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                     ],
                   ),
                 ),
-                Spacer(),
+                const Spacer(),
                 Container(
                   width: 40,
                   height: 40,
                   child: FloatingActionButton(
                     onPressed: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: ((context) {
-                        return AddCoinScreen();
-                      })));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) {
+                          // return const AddCoinScreen();
+                          return AddCoinNew();
+                        }),
+                      );
                     },
-                    child: Icon(
+                    child: const Icon(
                       Icons.add,
                       color: Colors.black,
                     ),
-                    backgroundColor: Color.fromRGBO(55, 204, 155, 1.0),
+                    backgroundColor: const Color.fromRGBO(55, 204, 155, 1.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100.0),
                     ),
@@ -79,7 +98,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -87,7 +106,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               height: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
+                image: const DecorationImage(
                   image: AssetImage(
                       'assets/graph_background.png'), // Replace with your graph background image
                   fit: BoxFit.cover,
@@ -95,8 +114,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               ),
               child: Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, right: 10),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -133,7 +152,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           '15.3%', // Replace with your profile icon or image
                           style: TextStyle(
@@ -147,17 +166,17 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            Text(
+            const Text(
               'Crypto Asset',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Card(
@@ -187,22 +206,22 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
+                          const Text(
                             'BTC',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 16,
                               color: Color.fromRGBO(215, 221, 236, 1),
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 2),
-                          Text(
+                          const Text(
                             'Bitcoin',
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               color: Color.fromRGBO(215, 221, 236, 1),
                               fontWeight: FontWeight.w500,
@@ -211,16 +230,16 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                         ],
                       ),
                     ),
-                    Spacer(),
+                    const Spacer(),
                     Column(
                       crossAxisAlignment:
                           CrossAxisAlignment.end, // Align to right
                       children: <Widget>[
-                        Text(
+                        const Text(
                           '\$54,382.64',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 16,
                             color: Color.fromRGBO(215, 221, 236, 1),
                             fontWeight: FontWeight.w700,
@@ -231,10 +250,10 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                           width: 60,
                           height: 20,
                           decoration: BoxDecoration(
-                            color: Color.fromRGBO(55, 204, 155, 1.0),
+                            color: const Color.fromRGBO(55, 204, 155, 1.0),
                             borderRadius: BorderRadius.circular(15),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               '15.3%', // Replace with your profile icon or image
                               style: TextStyle(

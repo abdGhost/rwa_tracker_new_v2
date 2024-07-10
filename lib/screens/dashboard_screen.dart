@@ -47,14 +47,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor:
+          Colors.white, // Set background color of Scaffold to white
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
+        backgroundColor: Colors.white, // Ensure AppBar is also white
         title: const Text(
           'Dashboard',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -106,7 +108,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Text(
                     'Market',
                     style: TextStyle(
-                        fontWeight: FontWeight.w600, color: Colors.white),
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
                 Padding(
@@ -180,8 +185,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
               return Container(
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Color(int.parse(item['color']!)),
-                  borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                  color: Colors.white, // Ensure container is also white
+                  borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.2), // Shadow color
+                      spreadRadius: 2, // Spread radius
+                      blurRadius: 5, // Blur radius
+                      offset: const Offset(0, 3), // Shadow position
+                    ),
+                  ],
+                  border: Border.all(
+                      color: Colors.grey.withOpacity(0.2)), // Add border
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -198,7 +213,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 Text(
                                   item['marketCap']!,
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontSize: 20,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -208,8 +223,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     const Text(
                                       'Market Cap',
                                       style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400,
+                                        color: Colors.black,
                                       ),
                                     ),
                                     Row(
@@ -247,13 +261,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 Text(
                                   item['volume_24h']!,
                                   style: const TextStyle(
-                                    color: Colors.white,
+                                    color: Colors.black,
                                     fontSize: 20,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                                 const Text(
-                                  '24h trading volume',
-                                  style: TextStyle(color: Colors.white),
+                                  '24h Trading Volume',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
                               ],
                             ),
@@ -265,7 +283,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           child: Text(
                             item['title']!,
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.black,
                               fontWeight: FontWeight.w700,
                               fontSize: 20,
                             ),
@@ -286,7 +304,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     Text(
                                       token['name'],
                                       style: const TextStyle(
-                                        color: Colors.white,
+                                        color: Colors.black,
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -342,86 +360,101 @@ class _DashboardScreenState extends State<DashboardScreen> {
           );
         })));
       },
-      child: Container(
-        height: 100,
+      child: Card(
+        color: Colors.white, // Set card color to white
+        elevation: 0.0, // Elevation remains zero
         margin: const EdgeInsets.only(bottom: 10.0),
-        decoration: BoxDecoration(
-          color: cardColor,
-          borderRadius: BorderRadius.circular(4.0),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0), // Adjust the border radius
         ),
-        child: Padding(
-          padding: const EdgeInsets.only(left: 10, right: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Image.network(
-                currency.image ?? '',
-                width: 40,
-                height: 40,
-                errorBuilder: (context, error, stackTrace) =>
-                    const Icon(Icons.error),
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    currency.name ?? '',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    currency.symbol?.toUpperCase() ?? '',
-                    style: const TextStyle(
-                      color: captionColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                width: 0,
-              ),
-              if (currency.sparklineIn7D?.price != null)
-                _buildSparkline(currency.sparklineIn7D!.price, priceColor),
-              const SizedBox(
-                width: 0,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    '\$${formatNumber(currency.marketCap ?? 0.0)}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Text(
-                    '${currency.priceChangePercentage24H?.toStringAsFixed(2) ?? '0.00'}%',
-                    style: TextStyle(
-                      color: priceColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8.0),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.2), // Shadow color
+                spreadRadius: 2, // Spread radius
+                blurRadius: 5, // Blur radius
+                offset: const Offset(0, 3), // Shadow position
               ),
             ],
+            border:
+                Border.all(color: Colors.grey.withOpacity(0.1)), // Add border
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              children: [
+                Image.network(
+                  currency.image ?? '',
+                  width: 30,
+                  height: 30,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.error),
+                ),
+                const SizedBox(
+                    width: 10), // Adjust space between image and text
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        currency.name ?? '',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        currency.symbol?.toUpperCase() ?? '',
+                        style: const TextStyle(
+                          color: captionColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (currency.sparklineIn7D?.price != null)
+                  SizedBox(
+                    width: 80, // Adjust the width of the sparkline graph
+                    child: _buildSparkline(
+                      currency.sparklineIn7D!.price,
+                      priceColor,
+                    ),
+                  ),
+                const SizedBox(
+                    width: 30), // Reduce the space between graph and text
+                SizedBox(
+                  width: 80,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '\$${formatNumber(currency.marketCap ?? 0.0)}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '${currency.priceChangePercentage24H?.toStringAsFixed(2) ?? '0.00'}%',
+                        style: TextStyle(
+                          color: priceColor,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

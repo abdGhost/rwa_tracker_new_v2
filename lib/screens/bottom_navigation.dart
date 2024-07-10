@@ -27,7 +27,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
       body: _screen[_index],
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color.fromRGBO(20, 20, 22, 1.0),
+        backgroundColor: Color(0xFF348f6c),
         currentIndex: _index,
         onTap: (index) {
           setState(() {
@@ -41,7 +41,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.leaderboard_sharp),
-            label: 'portfolio',
+            label: 'Portfolio',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
