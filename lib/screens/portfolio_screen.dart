@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rwatrackernew/screens/add_coin_new.dart';
+import 'package:rwatrackernew/screens/add_coin_new_v3.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:rwatrackernew/screens/add_coin.dart';
 
 import '../model/portfolio/crypto_asset.dart';
 
@@ -83,7 +83,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         elevation: 0,
         backgroundColor: Colors.white,
         title: const Text(
-          'Dashboard',
+          'Portfolio',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
@@ -138,7 +138,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) {
-                              return const AddCoinNew();
+                              // return const AddCoinNew();
+                              return AddCoinNew();
                             }),
                           );
                         },

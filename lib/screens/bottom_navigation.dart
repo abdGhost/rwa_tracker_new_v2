@@ -39,7 +39,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_customize,
                 color: _index == 0 ? Colors.white : Colors.white70),
-            label: 'DashBoard',
+            label: 'Home',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.leaderboard_sharp,

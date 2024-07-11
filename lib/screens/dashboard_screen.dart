@@ -64,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         elevation: 0,
         backgroundColor: Colors.white, // Ensure AppBar is also white
         title: const Text(
-          'Dashboard',
+          'Home',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
