@@ -126,10 +126,11 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       appBar: _isFullScreen
           ? null
           : AppBar(
+              backgroundColor: Colors.white,
               leading: IconButton(
                 icon: const Icon(
                   Icons.arrow_back_ios,
@@ -142,8 +143,8 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
               title: Text(
                 widget.video.title,
                 style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
