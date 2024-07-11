@@ -57,7 +57,7 @@ class MarketData {
   Map<String, double> atl;
   Map<String, double> atlChangePercentage;
   Map<String, DateTime> atlDate;
-  double priceChangePercentage24h; // Added priceChangePercentage24h property
+  double priceChangePercentage24h;
 
   MarketData({
     required this.currentPrice,
@@ -75,7 +75,7 @@ class MarketData {
     required this.atl,
     required this.atlChangePercentage,
     required this.atlDate,
-    required this.priceChangePercentage24h, // Initialize priceChangePercentage24h
+    required this.priceChangePercentage24h,
   });
 
   factory MarketData.fromJson(Map<String, dynamic> json) {
@@ -95,8 +95,7 @@ class MarketData {
       atl: _parseToDoubleMap(json['atl']),
       atlChangePercentage: _parseToDoubleMap(json['atl_change_percentage']),
       atlDate: _parseToDateTimeMap(json['atl_date']),
-      priceChangePercentage24h: json['price_change_percentage_24h']
-          .toDouble(), // Parse priceChangePercentage24h from JSON
+      priceChangePercentage24h: json['price_change_percentage_24h'].toDouble(),
     );
   }
 
@@ -119,14 +118,35 @@ class MarketData {
 
 class Links {
   List<String> homepage;
+  List<String> blockchainSite;
+  List<String> officialForumUrl;
+  List<String> chatUrl;
+  List<String> announcementUrl;
+  String twitter;
+  String facebook;
+  String reddit;
 
   Links({
     required this.homepage,
+    required this.blockchainSite,
+    required this.officialForumUrl,
+    required this.chatUrl,
+    required this.announcementUrl,
+    required this.twitter,
+    required this.facebook,
+    required this.reddit,
   });
 
   factory Links.fromJson(Map<String, dynamic> json) {
     return Links(
       homepage: List<String>.from(json['homepage']),
+      blockchainSite: List<String>.from(json['blockchain_site']),
+      officialForumUrl: List<String>.from(json['official_forum_url']),
+      chatUrl: List<String>.from(json['chat_url']),
+      announcementUrl: List<String>.from(json['announcement_url']),
+      twitter: json['twitter_screen_name'] ?? '',
+      facebook: json['facebook_username'] ?? '',
+      reddit: json['subreddit_url'] ?? '',
     );
   }
 }

@@ -58,6 +58,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
                 textAlign: TextAlign.center,
               );
             } else if (snapshot.hasError) {
+              print('Error: ${snapshot.error}');
               return const Text(
                 'Error',
                 style: TextStyle(
@@ -68,6 +69,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
               );
             } else if (snapshot.hasData) {
               final coinDetail = snapshot.data![0] as CoinDetail;
+              _printLinks(coinDetail);
               return Text(
                 coinDetail.detail.name,
                 style: const TextStyle(
@@ -95,6 +97,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
+            print('Error: ${snapshot.error}');
             return const Center(child: Text('Error loading data'));
           } else if (snapshot.hasData) {
             final coinDetail = snapshot.data![0] as CoinDetail;
@@ -121,6 +124,18 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
         },
       ),
     );
+  }
+
+  void _printLinks(CoinDetail coinDetail) {
+    final links = coinDetail.detail.links;
+    print('Homepage: ${links.homepage.join(', ')}');
+    print('Blockchain Site: ${links.blockchainSite.join(', ')}');
+    print('Official Forum URL: ${links.officialForumUrl.join(', ')}');
+    print('Chat URL: ${links.chatUrl.join(', ')}');
+    print('Announcement URL: ${links.announcementUrl.join(', ')}');
+    print('Twitter: ${links.twitter}');
+    print('Facebook: ${links.facebook}');
+    print('Reddit: ${links.reddit}');
   }
 
   Widget _buildCoinHeader(CoinDetail coinDetail) {
