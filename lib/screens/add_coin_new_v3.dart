@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:convert';
 import '../api/api_service.dart';
 import '../model/coin_detail.dart';
@@ -70,7 +72,7 @@ class _AddCoinNewState extends State<AddCoinNew> {
       double amount = double.parse(_amountController.text);
       double quantity = double.parse(_quantityController.text);
       double purchasePrice = amount / quantity;
-      _purchasePriceController.text = purchasePrice.toStringAsFixed(2);
+      _purchasePriceController.text = purchasePrice.toStringAsFixed(6);
     }
   }
 
@@ -136,11 +138,14 @@ class _AddCoinNewState extends State<AddCoinNew> {
       setState(() {
         _selectedDate = picked;
         _dateController.text = '${_selectedDate!.toLocal()}'.split(' ')[0];
+        print('Date');
+        print(_dateController.text);
       });
     }
   }
 
   String _calculateProfitOrLoss() {
+    // Check for empty inputs or null coin details
     if (_amountController.text.isEmpty ||
         _purchasePriceController.text.isEmpty ||
         _quantityController.text.isEmpty ||
@@ -148,6 +153,7 @@ class _AddCoinNewState extends State<AddCoinNew> {
       return '';
     }
 
+    // Parse input values
     double amount =
         double.parse(_amountController.text); // Total amount invested
     double purchasePrice = double.parse(
@@ -157,22 +163,86 @@ class _AddCoinNewState extends State<AddCoinNew> {
     double currentPrice = _coinDetails?.detail.marketData.currentPrice['usd'] ??
         0; // Current price per unit
 
+    // Calculate total purchase price and total current price
     double totalPurchasePrice =
         purchasePrice * quantity; // Total initial investment
     double totalCurrentPrice =
         currentPrice * quantity; // Current total value of investment
 
+    // Calculate profit or loss
     double profitOrLoss =
         totalCurrentPrice - totalPurchasePrice; // Absolute profit or loss
-    double percentage = (profitOrLoss / totalPurchasePrice) *
-        100; // Percentage profit or loss relative to initial investment
 
+    // Calculate percentage only if totalPurchasePrice is not zero
+    double percentage =
+        totalPurchasePrice != 0 ? (profitOrLoss / totalPurchasePrice) * 100 : 0;
+
+    // Debug prints
+    print('Amount: $amount');
+    print('Purchase Price per Unit: $purchasePrice');
+    print('Quantity: $quantity');
+    print('Current Price per Unit: $currentPrice');
+    print('Total Purchase Price: $totalPurchasePrice');
+    print('Total Current Price: $totalCurrentPrice');
+    print('Profit or Loss: $profitOrLoss');
+    print('Percentage: $percentage');
+
+    // Determine result message
     String result = profitOrLoss >= 0
         ? 'Profit: \$${profitOrLoss.toStringAsFixed(2)} (${percentage.toStringAsFixed(2)}%)'
         : 'Loss: \$${profitOrLoss.abs().toStringAsFixed(2)} (${percentage.abs().toStringAsFixed(2)}%)';
 
     return result;
   }
+
+  // Future<void> _submitCoinData() async {
+  //   print('calling api');
+  //   // Ensure all required fields are filled
+  //   if (_amountController.text.isEmpty ||
+  //       _purchasePriceController.text.isEmpty ||
+  //       _quantityController.text.isEmpty ||
+  //       _dateController.text.isEmpty ||
+  //       _coinDetails == null) {
+  //     // Show an error message or handle the validation as needed
+  //     return;
+  //   }
+
+  //   // Gather the values from the text fields
+  //   final double amount = double.parse(_amountController.text);
+  //   final double purchasePrice = double.parse(_purchasePriceController.text);
+  //   final double quantity = double.parse(_quantityController.text);
+  //   final String date = _dateController.text;
+  //   final String coinId = _selectedCoin['id'];
+
+  //   // Create the request payload
+  //   final Map<String, dynamic> payload = {
+  //     'amount': amount,
+  //     'purchasePrice': purchasePrice,
+  //     'quantity': quantity,
+  //     'date': date,
+  //     'coinId': coinId,
+  //   };
+
+  //   // Make the API call
+  //   try {
+  //     final response = await http.post(
+  //       Uri.parse(
+  //           'https://yourapiendpoint.com/submitCoinData'), // Replace with your API endpoint
+  //       headers: {'Content-Type': 'application/json'},
+  //       body: json.encode(payload),
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       // Handle success
+  //       print('Data submitted successfully');
+  //     } else {
+  //       // Handle error
+  //       print('Error submitting data: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Exception: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -189,6 +259,15 @@ class _AddCoinNewState extends State<AddCoinNew> {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.add,
+              color: Color(0xFF34906c),
+            ),
+            onPressed: () {},
+          ),
+        ],
         title: const Text(
           'Add Coin',
           style: TextStyle(
@@ -301,240 +380,335 @@ class _AddCoinNewState extends State<AddCoinNew> {
                               children: [
                                 Image.network(
                                   _selectedCoin['image'],
-                                  height: 50,
-                                  width: 50,
+                                  height: 30,
+                                  width: 30,
                                 ),
                                 const SizedBox(width: 16.0),
-                                Container(
-                                  width: 200,
-                                  child: Text(
-                                    _selectedCoin['name'],
-                                    style: const TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16.0),
-                            Text(
-                              'Symbol: ${_selectedCoin['symbol']}',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              'Market Cap Rank: ${_selectedCoin['market_cap_rank'] ?? 'N/A'}',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              'Current Price: \$${_coinDetails?.detail.marketData.currentPrice['usd'] ?? 'N/A'}',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              'Total Market Cap: \$${_coinDetails?.detail.marketData.marketCap['usd'] ?? 'N/A'}',
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _amountController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Enter amount',
-                                      labelStyle: const TextStyle(
-                                          color: Color.fromRGBO(
-                                              55, 204, 155, 1.0)),
-                                      border: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      focusedBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      enabledBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      hintText: 'Enter amount',
-                                      hintStyle: const TextStyle(
-                                          color: Color.fromRGBO(
-                                              55, 204, 155, 1.0)),
-                                    ),
-                                    style:
-                                        const TextStyle(color: Colors.black54),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                Expanded(
-                                  child: TextField(
-                                    controller: _quantityController,
-                                    decoration: InputDecoration(
-                                      labelText: 'Enter quantity',
-                                      labelStyle: const TextStyle(
-                                          color: Color.fromRGBO(
-                                              55, 204, 155, 1.0)),
-                                      border: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      focusedBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      enabledBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      hintText: 'Enter quantity',
-                                      hintStyle: const TextStyle(
-                                          color: Color.fromRGBO(
-                                              55, 204, 155, 1.0)),
-                                    ),
-                                    style:
-                                        const TextStyle(color: Colors.black54),
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16.0),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _purchasePriceController,
-                                    decoration: InputDecoration(
-                                      labelText:
-                                          'Enter purchase price per unit',
-                                      labelStyle: const TextStyle(
-                                          color: Color.fromRGBO(
-                                              55, 204, 155, 1.0)),
-                                      border: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      focusedBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      enabledBorder: const OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Color.fromRGBO(
-                                                55, 204, 155, 1.0)),
-                                      ),
-                                      hintText: 'Enter purchase price per unit',
-                                      hintStyle: const TextStyle(
-                                          color: Color.fromRGBO(
-                                              55, 204, 155, 1.0)),
-                                    ),
-                                    style:
-                                        const TextStyle(color: Colors.black54),
-                                    keyboardType: TextInputType.number,
-                                    readOnly: true,
-                                  ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: () => _selectDate(context),
-                                    child: AbsorbPointer(
-                                      child: TextField(
-                                        controller: _dateController,
-                                        decoration: InputDecoration(
-                                          labelText: 'Select date',
-                                          labelStyle: const TextStyle(
-                                              color: Color.fromRGBO(
-                                                  55, 204, 155, 1.0)),
-                                          border: const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color.fromRGBO(
-                                                    55, 204, 155, 1.0)),
-                                          ),
-                                          focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color.fromRGBO(
-                                                    55, 204, 155, 1.0)),
-                                          ),
-                                          enabledBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Color.fromRGBO(
-                                                    55, 204, 155, 1.0)),
-                                          ),
-                                          prefixIcon: const Icon(
-                                            Icons.calendar_today,
-                                            color: Color(0xFF348f6c),
-                                          ),
-                                          hintText: 'Select date',
-                                          hintStyle: const TextStyle(
-                                              color: Color.fromRGBO(
-                                                  55, 204, 155, 1.0)),
-                                        ),
+                                Column(
+                                  children: [
+                                    Container(
+                                      width: 200,
+                                      child: Text(
+                                        _selectedCoin['name'],
                                         style: const TextStyle(
-                                            color: Colors.black54),
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.w700,
+                                          color: Colors.black87,
+                                        ),
                                       ),
                                     ),
+                                    Container(
+                                      width: 200,
+                                      child: Text(
+                                        _selectedCoin['symbol'],
+                                        style: const TextStyle(
+                                          fontSize: 16.0,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            const SizedBox(height: 10.0),
+                            Row(
+                              children: [
+                                Text(
+                                  'Market Cap Rank:',
+                                  style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                Text(
+                                  ' ${_selectedCoin['market_cap_rank'] ?? 'N/A'}',
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 16.0),
-                            Center(
-                              child: SizedBox(
-                                width: 200, // Set the width you desire
-                                height: 50, // Set the height you desire
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      // Trigger the calculation and UI update
-                                      _calculateProfitOrLoss();
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                    backgroundColor: const Color(0xFF348f6c),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(
-                                          25.0), // Set your desired border radius here
-                                    ),
-                                  ),
-                                  child: const Text(
-                                    'Calculate',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                    ),
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                Text(
+                                  'Current Price:',
+                                  style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
+                                Text(
+                                  ' ${_coinDetails?.detail.marketData.currentPrice['usd'] ?? 'N/A'}',
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8.0),
+                            Row(
+                              children: [
+                                Text(
+                                  'Total Market Cap: ',
+                                  style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                Text(
+                                  ' \$${_coinDetails?.detail.marketData.marketCap['usd'] ?? 'N/A'}',
+                                  style: const TextStyle(
+                                    fontSize: 14.0,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 30.0),
+                            Container(
+                              height: 260,
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.grey),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _amountController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Enter amount',
+                                            labelStyle: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    55, 204, 155, 1.0)),
+                                            border: const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            focusedBorder:
+                                                const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            enabledBorder:
+                                                const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            hintText: 'Enter amount',
+                                            hintStyle: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    55, 204, 155, 1.0)),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 10.0,
+                                                    horizontal: 10.0),
+                                          ),
+                                          style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16.0),
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _quantityController,
+                                          decoration: InputDecoration(
+                                            labelText: 'Enter quantity',
+                                            labelStyle: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    55, 204, 155, 1.0)),
+                                            border: const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            focusedBorder:
+                                                const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            enabledBorder:
+                                                const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            hintText: 'Enter quantity',
+                                            hintStyle: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    55, 204, 155, 1.0)),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 10.0,
+                                                    horizontal: 10.0),
+                                          ),
+                                          style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 16.0),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          controller: _purchasePriceController,
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                'Enter purchase price per unit',
+                                            labelStyle: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    55, 204, 155, 1.0)),
+                                            border: const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            focusedBorder:
+                                                const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            enabledBorder:
+                                                const OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Color.fromRGBO(
+                                                      55, 204, 155, 1.0)),
+                                            ),
+                                            hintText:
+                                                'Enter purchase price per unit',
+                                            hintStyle: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    55, 204, 155, 1.0)),
+                                            contentPadding:
+                                                const EdgeInsets.symmetric(
+                                                    vertical: 10.0,
+                                                    horizontal: 10.0),
+                                          ),
+                                          style: const TextStyle(
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                          readOnly: true,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 16.0),
+                                      Expanded(
+                                        child: GestureDetector(
+                                          onTap: () => _selectDate(context),
+                                          child: AbsorbPointer(
+                                            child: TextField(
+                                              controller: _dateController,
+                                              decoration: InputDecoration(
+                                                labelText: 'Select date',
+                                                labelStyle: const TextStyle(
+                                                    color: Color.fromRGBO(
+                                                        55, 204, 155, 1.0)),
+                                                border:
+                                                    const OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Color.fromRGBO(
+                                                          55, 204, 155, 1.0)),
+                                                ),
+                                                focusedBorder:
+                                                    const OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Color.fromRGBO(
+                                                          55, 204, 155, 1.0)),
+                                                ),
+                                                enabledBorder:
+                                                    const OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                      color: Color.fromRGBO(
+                                                          55, 204, 155, 1.0)),
+                                                ),
+                                                prefixIcon: const Icon(
+                                                  Icons.calendar_today,
+                                                  color: Color(0xFF348f6c),
+                                                ),
+                                                hintText: 'Select date',
+                                                hintStyle: const TextStyle(
+                                                    color: Color.fromRGBO(
+                                                        55, 204, 155, 1.0)),
+                                                contentPadding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 10.0,
+                                                        horizontal: 10.0),
+                                              ),
+                                              style: const TextStyle(
+                                                color: Colors.black54,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 25.0),
+                                  Center(
+                                    child: SizedBox(
+                                      width: 140, // Set the width you desire
+                                      height: 40, // Set the height you desire
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            // Trigger the calculation and UI update
+                                            _calculateProfitOrLoss();
+                                          });
+                                          // Submit the coin data
+                                          // _submitCoinData();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          backgroundColor:
+                                              const Color(0xFF348f6c),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                                25.0), // Set your desired border radius here
+                                          ),
+                                        ),
+                                        child: const Text(
+                                          'Calculate',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 16.0),
