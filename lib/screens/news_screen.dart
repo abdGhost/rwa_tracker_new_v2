@@ -41,7 +41,7 @@ class _NewsScreenState extends State<NewsScreen> {
           future: futureBlog,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const CircularProgressIndicator();
+              return const CircularProgressIndicator(color: Color(0xFF348f6c));
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else if (snapshot.hasData) {

@@ -38,7 +38,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
-            color: Color(0xFF34906c),
+            color: Color(0xFF348f6c),
           ),
           onPressed: () {
             Navigator.of(context).pop();
@@ -95,7 +95,9 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
         future: futureData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: Color(0xFF348f6c)),
+            );
           } else if (snapshot.hasError) {
             print('Error: ${snapshot.error}');
             return const Center(child: Text('Error loading data'));
@@ -183,7 +185,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             width: 100,
           ),
           Flexible(

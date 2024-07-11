@@ -81,7 +81,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         future: futureCoin,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+                child: CircularProgressIndicator(color: Color(0xFF348f6c)));
           } else if (snapshot.hasError) {
             print(snapshot);
             logger.e('Error fetching coins: ${snapshot.error}');
@@ -115,7 +116,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       } else if (snapshot.hasError) {
                         return Text('${snapshot.error}');
                       }
-                      return const CircularProgressIndicator();
+                      return const CircularProgressIndicator(
+                          color: Color(0xFF348f6c));
                     },
                   ),
                 ),
