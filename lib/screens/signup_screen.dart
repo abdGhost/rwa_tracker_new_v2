@@ -138,6 +138,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Center(
           child: Form(
@@ -159,7 +160,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Create Account',
                     style: GoogleFonts.roboto(
-                      fontSize: 28,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: secondaryColor, // Use the color here
                     ),
@@ -170,9 +171,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   Text(
                     'Please fill in the details to create your account',
                     style: GoogleFonts.roboto(
-                      fontSize: 14,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey,
+                      fontSize: 14,
+                      color: Colors.black54,
                     ),
                   ),
                   const SizedBox(
@@ -198,9 +199,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         color: secondaryColor,
                       ),
                     ),
+                    style: const TextStyle(
+                        color:
+                            Colors.black54), // Change input text color to gray
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return " Please enter a valid username";
+                        return "Please enter a valid username";
                       }
                       return null;
                     },
@@ -231,11 +235,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         color: secondaryColor,
                       ),
                     ),
+                    style: const TextStyle(
+                        color:
+                            Colors.black54), // Change input text color to gray
                     validator: (value) {
                       if (value == null ||
                           value.trim().isEmpty ||
                           !value.contains('@')) {
-                        return " Please enter a valid email address";
+                        return "Please enter a valid email address";
                       }
                       return null;
                     },
@@ -284,6 +291,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                       ),
                     ),
+                    style: const TextStyle(
+                        color:
+                            Colors.black54), // Change input text color to gray
                     validator: (value) {
                       if (value == null ||
                           value.trim().isEmpty ||
@@ -337,6 +347,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                       ),
                     ),
+                    style: const TextStyle(
+                        color:
+                            Colors.black54), // Change input text color to gray
                     validator: (value) {
                       if (value == null ||
                           value.trim().isEmpty ||
@@ -391,13 +404,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         }),
                       );
                     },
-                    child: Text(
-                      'Already have an account? Login',
-                      style: GoogleFonts.roboto(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        color: secondaryColor, // Use the color here
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Already have an account?',
+                          style: GoogleFonts.roboto(
+                            fontWeight: FontWeight.w400,
+                            fontSize: 14,
+                            color: Colors.black54, // Use the color here
+                          ),
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          'Login',
+                          style: GoogleFonts.roboto(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                            color: secondaryColor, // Use the color here
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
