@@ -162,7 +162,9 @@ class _AddCoinNewState extends State<AddCoinNew> {
             ),
             const SizedBox(height: 16.0),
             _isLoading
-                ? const CircularProgressIndicator()
+                ? const CircularProgressIndicator(
+                    color: Color(0xFF348f6c),
+                  )
                 : _showSearchResults
                     ? Expanded(
                         child: ListView.builder(
