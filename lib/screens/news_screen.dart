@@ -23,13 +23,15 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(20, 20, 22, 1.0),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 0,
+        backgroundColor: Colors.white, // Ensure AppBar is also white
         title: const Text(
           'Blog',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -59,99 +61,120 @@ class _NewsScreenState extends State<NewsScreen> {
                         ),
                       );
                     },
-                    child: Card(
-                      color:
-                          const Color(0xFF222224), // Dark background for card
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 12,
+                        right: 12,
+                        bottom: 4,
                       ),
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.center, // Center vertically
-                          children: <Widget>[
-                            Image.network(
-                              blog.image.startsWith('http')
-                                  ? blog.image
-                                  : 'https://via.placeholder.com/100',
-                              height: 100,
-                              width: 100,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.image,
-                                    size: 100, color: Colors.grey);
-                              },
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    blog.blogTitle,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      color: Color.fromRGBO(215, 221, 236, 1),
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        FontAwesomeIcons.user,
-                                        size: 14,
-                                        color: Color.fromRGBO(0, 128, 0, 1.0),
-                                      ),
-                                      const SizedBox(width: 5),
+                      child: Card(
+                        color: Colors.white, // White background for card
+                        elevation: 1, // No elevation
+                        margin: const EdgeInsets.only(bottom: 10.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8.0),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey
+                                    .withOpacity(0.2), // Shadow color
+                                spreadRadius: 2, // Spread radius
+                                blurRadius: 5, // Blur radius
+                                offset: const Offset(0, 3), // Shadow position
+                              ),
+                            ],
+                            border:
+                                Border.all(color: Colors.grey.withOpacity(0.1)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment
+                                  .center, // Center vertically
+                              children: <Widget>[
+                                Image.network(
+                                  blog.image.startsWith('http')
+                                      ? blog.image
+                                      : 'https://via.placeholder.com/100',
+                                  height: 100,
+                                  width: 100,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.image,
+                                        size: 100, color: Colors.grey);
+                                  },
+                                ),
+                                const SizedBox(width: 20),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
                                       Text(
-                                        blog.by,
+                                        blog.blogTitle,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          fontSize: 14,
-                                          color:
-                                              Color.fromRGBO(98, 108, 139, 1),
-                                          fontWeight: FontWeight.w500,
+                                          fontSize: 16,
+                                          color: Colors.black87,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                      const SizedBox(
-                                        width: 20,
+                                      const SizedBox(height: 5),
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            FontAwesomeIcons.user,
+                                            size: 14,
+                                            color: Color(0xFF348f6c),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            blog.by,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 20),
+                                          const Icon(
+                                            FontAwesomeIcons.calendar,
+                                            size: 14,
+                                            color: Color(0xFF348f6c),
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            blog.date,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      const Icon(
-                                        FontAwesomeIcons.calendar,
-                                        size: 14,
-                                        color: Color.fromRGBO(0, 128, 0, 1.0),
-                                      ),
-                                      const SizedBox(width: 5),
+                                      const SizedBox(height: 10),
                                       Text(
-                                        blog.date,
+                                        blog.intro,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
-                                          fontSize: 14,
-                                          color:
-                                              Color.fromRGBO(98, 108, 139, 1),
-                                          fontWeight: FontWeight.w500,
+                                          fontSize: 12,
+                                          color: Colors.black54,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    blog.intro,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Color.fromRGBO(194, 196, 201, 1),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
