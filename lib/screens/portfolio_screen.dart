@@ -24,54 +24,46 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Future<void> _loadUserName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _userName = prefs.getString('user_name') ?? 'User';
+      _userName = prefs.getString('user_name1') ?? 'Ghost';
     });
   }
 
   final List<CryptoAsset> _cryptoAssets = [
     CryptoAsset(
       symbol: 'ONDO',
-      name: 'Ondo',
-      imageUrl: 'https://example.com/images/ondo.png',
-      price: 123.45,
-      change: 5.6,
+      name: 'Ondo Finance',
+      imageUrl: 'assets/ondo.png',
+      price: 1.02,
+      change: 5.2,
     ),
     CryptoAsset(
-      symbol: 'Condo',
-      name: 'Condo',
-      imageUrl: 'https://example.com/images/soon.png',
-      price: 456.78,
-      change: -2.3,
+      symbol: 'OM',
+      name: 'MANTRA DAO',
+      imageUrl: 'assets/mantra.png',
+      price: 0.750963,
+      change: 5.34,
     ),
     CryptoAsset(
-      symbol: 'Pendle',
+      symbol: 'PENDLE',
       name: 'Pendle',
-      imageUrl: 'https://example.com/images/rwa.png',
-      price: 789.01,
+      imageUrl: 'assets/pendle.png',
+      price: 0.729,
       change: 1.2,
     ),
     CryptoAsset(
-      symbol: 'XDC Network',
+      symbol: 'XDC',
       name: 'XDC Network',
-      imageUrl: 'https://example.com/images/grainchain.png',
-      price: 234.56,
-      change: 4.5,
+      imageUrl: 'assets/xdc.png',
+      price: 0.0275,
+      change: 2.5,
     ),
     CryptoAsset(
-      symbol: 'Polymesh',
-      name: 'POLYX',
-      imageUrl: 'https://example.com/images/agridigital.png',
-      price: 345.67,
-      change: -3.4,
+      symbol: 'GFI',
+      name: 'Goldfinch',
+      imageUrl: 'assets/goldfinch.png',
+      price: 2.11,
+      change: -3.00,
     ),
-    CryptoAsset(
-      symbol: 'OriginTrail',
-      name: 'TRAC',
-      imageUrl: 'https://example.com/images/treecoin.png',
-      price: 567.89,
-      change: 7.8,
-    ),
-    // Add more CryptoAsset instances as needed
   ];
 
   @override
@@ -163,10 +155,10 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
               height: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                image: const DecorationImage(
-                  image: AssetImage('assets/graph_background.png'),
-                  fit: BoxFit.cover,
-                ),
+                // image: const DecorationImage(
+                //   image: AssetImage('assets/graph_background.png'),
+                //   fit: BoxFit.cover,
+                // ),
               ),
               child: Stack(
                 children: [
@@ -255,10 +247,23 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                         children: <Widget>[
                           ClipRRect(
                             borderRadius: BorderRadius.circular(25),
-                            child: Image.network(
+                            // child: Image.network(
+                            //   asset.imageUrl,
+                            //   height: 50,
+                            //   width: 50,
+                            //   fit: BoxFit.cover,
+                            //   errorBuilder: (context, error, stackTrace) {
+                            //     return const Icon(
+                            //       Icons.image,
+                            //       size: 50,
+                            //       color: Colors.grey,
+                            //     );
+                            //   },
+                            // ),
+                            child: Image.asset(
                               asset.imageUrl,
-                              height: 50,
-                              width: 50,
+                              height: 40,
+                              width: 40,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return const Icon(
