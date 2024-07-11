@@ -1,14 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:rwatrackernew/screens/coin_details_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../api/api_service.dart';
 import '../constant/app_color.dart';
 import '../model/coin.dart';
 import '../model/hightlight.dart';
 import '../model/trend.dart';
-
 import 'package:logger/logger.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'login_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -44,6 +45,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     logger.d('Fetching trend: $futureTrend');
   }
 
+  void _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) {
+      return const LoginScreen();
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,6 +70,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.black),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: FutureBuilder<Coin>(
         future: futureCoin,
