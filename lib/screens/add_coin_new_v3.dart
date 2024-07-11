@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../api/api_service.dart';
+import '../model/coin_detail.dart';
+import 'dart:async';
 
 class AddCoinNew extends StatefulWidget {
   const AddCoinNew({super.key});
@@ -12,39 +15,80 @@ class AddCoinNew extends StatefulWidget {
 class _AddCoinNewState extends State<AddCoinNew> {
   final TextEditingController _searchController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _purchasePriceController =
+      TextEditingController();
   List<dynamic> _searchResults = [];
   bool _isLoading = false;
   bool _showSearchResults = true;
   dynamic _selectedCoin;
-  Map<String, dynamic>? _coinDetails;
+  CoinDetail? _coinDetails;
   DateTime? _selectedDate;
+  final ApiService _apiService = ApiService();
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    _amountController.dispose();
+    _purchasePriceController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_searchController.text.isNotEmpty) {
+        _searchCoins(_searchController.text);
+      } else {
+        setState(() {
+          _searchResults = [];
+          _showSearchResults = false;
+        });
+      }
+    });
+  }
 
   Future<void> _searchCoins(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _searchResults = [];
-        _showSearchResults = false;
-      });
-      return;
-    }
-
     setState(() {
       _isLoading = true;
+      _searchResults = [];
       _selectedCoin = null;
       _showSearchResults = true;
     });
 
-    final url =
-        Uri.parse('https://api.coingecko.com/api/v3/search?query=$query');
+    final url = Uri.parse(
+        'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies?page=1&size=30&category=$query');
     final response = await http.get(url);
+
+    print('Response status: ${response.statusCode}');
+    print('Response body for search : ${response.body}');
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      setState(() {
-        _searchResults = data['coins'];
-      });
+      print('Decoded data: $data'); // Log the decoded data for debugging
+
+      if (data != null && data['currency'] is List) {
+        setState(() {
+          _searchResults = data['currency'];
+        });
+      } else {
+        setState(() {
+          _searchResults = [];
+        });
+      }
     } else {
-      // Handle the error
+      // Handle the error appropriately
+      setState(() {
+        _searchResults = [];
+      });
     }
 
     setState(() {
@@ -53,16 +97,13 @@ class _AddCoinNewState extends State<AddCoinNew> {
   }
 
   Future<void> _getCoinDetails(String id) async {
-    final url = Uri.parse('https://api.coingecko.com/api/v3/coins/$id');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+    try {
+      final coinDetails = await _apiService.coinDetails(id);
       setState(() {
-        _coinDetails = data;
+        _coinDetails = coinDetails;
       });
-    } else {
-      // Handle the error
+    } catch (e) {
+      print('Error fetching coin details: $e');
     }
   }
 
@@ -81,23 +122,21 @@ class _AddCoinNewState extends State<AddCoinNew> {
   }
 
   String _calculateProfitOrLoss() {
-    if (_amountController.text.isEmpty || _coinDetails == null) {
+    if (_amountController.text.isEmpty ||
+        _purchasePriceController.text.isEmpty ||
+        _coinDetails == null) {
       return '';
     }
 
     double amount = double.parse(_amountController.text);
+    double purchasePrice = double.parse(_purchasePriceController.text);
     double currentPrice =
-        _coinDetails?['market_data']['current_price']['usd'] ?? 0;
-    double profitOrLoss = amount * currentPrice;
+        _coinDetails?.detail.marketData.currentPrice['usd'] ?? 0;
+    double profitOrLoss = (currentPrice - purchasePrice) * amount;
 
-    return 'Current Value: \$${profitOrLoss.toStringAsFixed(2)}';
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _amountController.dispose();
-    super.dispose();
+    return profitOrLoss >= 0
+        ? 'Profit: \$${profitOrLoss.toStringAsFixed(2)}'
+        : 'Loss: \$${profitOrLoss.abs().toStringAsFixed(2)}';
   }
 
   @override
@@ -124,84 +163,99 @@ class _AddCoinNewState extends State<AddCoinNew> {
         ),
         elevation: 0.3,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                labelText: 'Search for a coin',
-                labelStyle: const TextStyle(color: Color(0xFF348f6c)),
-                border: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF348f6c)),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF348f6c)),
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFF348f6c)),
-                ),
-                suffixIcon: const Icon(
-                  Icons.search,
-                  color: Color(0xFF348f6c),
-                ),
-                hintText: 'Search for a coin',
-                hintStyle: const TextStyle(
-                  color: Color(0xFF348f6c),
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14,
-                ),
-              ),
-              style: const TextStyle(
-                color: Colors.black54,
-              ),
-              onChanged: (value) {
-                _searchCoins(value);
-              },
-            ),
-            const SizedBox(height: 16.0),
-            _isLoading
-                ? const CircularProgressIndicator(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  labelText: 'Search for a coin',
+                  labelStyle: const TextStyle(color: Color(0xFF348f6c)),
+                  border: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF348f6c)),
+                  ),
+                  focusedBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF348f6c)),
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Color(0xFF348f6c)),
+                  ),
+                  suffixIcon:
+                      const Icon(Icons.search, color: Color(0xFF348f6c)),
+                  hintText: 'Search for a coin',
+                  hintStyle: const TextStyle(
                     color: Color(0xFF348f6c),
-                  )
-                : _showSearchResults
-                    ? Expanded(
-                        child: ListView.builder(
-                          itemCount: _searchResults.length,
-                          itemBuilder: (context, index) {
-                            final coin = _searchResults[index];
-                            return ListTile(
-                              leading: Image.network(coin['thumb']),
-                              title: Text(
-                                coin['name'],
-                                style: const TextStyle(
-                                  color: Colors.black87,
-                                ),
-                              ),
-                              subtitle: Text(
-                                coin['symbol'],
-                                style: const TextStyle(
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              onTap: () async {
-                                await _getCoinDetails(coin['id']);
-                                setState(() {
-                                  _selectedCoin = coin;
-                                  _showSearchResults = false;
-                                  _searchController.clear();
-                                });
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                  ),
+                ),
+                style: const TextStyle(
+                  color: Colors.black54,
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              _isLoading
+                  ? const CircularProgressIndicator(
+                      color: Color(0xFF348f6c),
+                    )
+                  : _showSearchResults
+                      ? _searchResults.isNotEmpty
+                          ? ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: _searchResults.length,
+                              itemBuilder: (context, index) {
+                                final coin = _searchResults[index];
+                                return ListTile(
+                                  leading: Image.network(
+                                    coin['image'],
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                                  title: Text(
+                                    coin['name'],
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    coin['symbol'],
+                                    style: const TextStyle(
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  onTap: () async {
+                                    await _getCoinDetails(coin['id']);
+                                    setState(() {
+                                      _selectedCoin = coin;
+                                      _showSearchResults = false;
+                                      _searchController.clear();
+                                    });
+                                    FocusScope.of(context).unfocus();
+                                  },
+                                );
                               },
-                            );
-                          },
-                        ),
-                      )
-                    : Container(),
-            _selectedCoin != null && _coinDetails != null
-                ? Expanded(
-                    child: Card(
-                      color: const Color(0xFF222224),
+                            )
+                          : const Center(
+                              child: Text(
+                                'No coin found',
+                                style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            )
+                      : Container(),
+              _selectedCoin != null && _coinDetails != null
+                  ? Card(
+                      elevation: 0,
+                      color: Colors.white,
                       margin: const EdgeInsets.only(top: 16.0),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -211,17 +265,20 @@ class _AddCoinNewState extends State<AddCoinNew> {
                             Row(
                               children: [
                                 Image.network(
-                                  _selectedCoin['thumb'],
+                                  _selectedCoin['image'],
                                   height: 50,
                                   width: 50,
                                 ),
                                 const SizedBox(width: 16.0),
-                                Text(
-                                  _selectedCoin['name'],
-                                  style: const TextStyle(
-                                    fontSize: 24.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                Container(
+                                  width: 200,
+                                  child: Text(
+                                    _selectedCoin['name'],
+                                    style: const TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -230,25 +287,33 @@ class _AddCoinNewState extends State<AddCoinNew> {
                             Text(
                               'Symbol: ${_selectedCoin['symbol']}',
                               style: const TextStyle(
-                                  fontSize: 18.0, color: Colors.white),
+                                fontSize: 18.0,
+                                color: Colors.black54,
+                              ),
                             ),
                             const SizedBox(height: 8.0),
                             Text(
                               'Market Cap Rank: ${_selectedCoin['market_cap_rank'] ?? 'N/A'}',
                               style: const TextStyle(
-                                  fontSize: 18.0, color: Colors.white),
+                                fontSize: 18.0,
+                                color: Colors.black54,
+                              ),
                             ),
                             const SizedBox(height: 8.0),
                             Text(
-                              'Current Price: \$${_coinDetails?['market_data']['current_price']['usd'] ?? 'N/A'}',
+                              'Current Price: \$${_coinDetails?.detail.marketData.currentPrice['usd'] ?? 'N/A'}',
                               style: const TextStyle(
-                                  fontSize: 18.0, color: Colors.white),
+                                fontSize: 18.0,
+                                color: Colors.black54,
+                              ),
                             ),
                             const SizedBox(height: 8.0),
                             Text(
-                              'Total Market Cap: \$${_coinDetails?['market_data']['market_cap']['usd'] ?? 'N/A'}',
+                              'Total Market Cap: \$${_coinDetails?.detail.marketData.marketCap['usd'] ?? 'N/A'}',
                               style: const TextStyle(
-                                  fontSize: 18.0, color: Colors.white),
+                                fontSize: 18.0,
+                                color: Colors.black54,
+                              ),
                             ),
                             const SizedBox(height: 16.0),
                             TextField(
@@ -277,10 +342,40 @@ class _AddCoinNewState extends State<AddCoinNew> {
                               keyboardType: TextInputType.number,
                             ),
                             const SizedBox(height: 16.0),
+                            TextField(
+                              controller: _purchasePriceController,
+                              decoration: InputDecoration(
+                                labelText: 'Enter purchase price per unit',
+                                labelStyle: const TextStyle(
+                                    color: Color.fromRGBO(55, 204, 155, 1.0)),
+                                border: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromRGBO(55, 204, 155, 1.0)),
+                                ),
+                                focusedBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromRGBO(55, 204, 155, 1.0)),
+                                ),
+                                enabledBorder: const OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                      color: Color.fromRGBO(55, 204, 155, 1.0)),
+                                ),
+                                hintText: 'Enter purchase price per unit',
+                                hintStyle: const TextStyle(
+                                    color: Color.fromRGBO(55, 204, 155, 1.0)),
+                              ),
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.number,
+                            ),
+                            const SizedBox(height: 16.0),
                             Row(
                               children: [
                                 ElevatedButton(
                                   onPressed: () => _selectDate(context),
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: const Color(0xFF348f6c),
+                                  ),
                                   child: const Text('Select Purchase Date'),
                                 ),
                                 const SizedBox(width: 16.0),
@@ -290,7 +385,9 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                       : '${_selectedDate!.toLocal()}'
                                           .split(' ')[0],
                                   style: const TextStyle(
-                                      fontSize: 16.0, color: Colors.white),
+                                    fontSize: 16.0,
+                                    color: Colors.black54,
+                                  ),
                                 ),
                               ],
                             ),
@@ -301,6 +398,10 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                   // Trigger the calculation and UI update
                                 });
                               },
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: const Color(0xFF348f6c),
+                              ),
                               child: const Text('Calculate Profit or Loss'),
                             ),
                             const SizedBox(height: 16.0),
@@ -312,10 +413,10 @@ class _AddCoinNewState extends State<AddCoinNew> {
                           ],
                         ),
                       ),
-                    ),
-                  )
-                : Container(),
-          ],
+                    )
+                  : Container(),
+            ],
+          ),
         ),
       ),
     );

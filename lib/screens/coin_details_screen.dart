@@ -32,7 +32,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
         backgroundColor: Colors.white,
         leading: IconButton(

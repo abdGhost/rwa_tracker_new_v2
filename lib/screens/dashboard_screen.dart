@@ -57,8 +57,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Colors.white, // Set background color of Scaffold to white
+      // backgroundColor:
+      //     Colors.white, // Set background color of Scaffold to white
+      backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
@@ -122,7 +123,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
                 const Padding(
-                  padding: EdgeInsets.only(left: 15, right: 15),
+                  padding: EdgeInsets.only(left: 20, right: 15),
                   child: Text(
                     'Market',
                     style: TextStyle(
@@ -203,7 +204,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
               return Container(
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  color: Colors.white, // Ensure container is also white
+                  // color: Colors.white, // Ensure container is also white
+                  color: Color(0xFFfbf2e6),
                   borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                   boxShadow: [
                     BoxShadow(
