@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../model/blog.dart';
 
@@ -16,8 +15,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(20, 20, 22, 1.0),
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        backgroundColor: Colors.white,
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,
@@ -27,11 +27,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             Navigator.of(context).pop();
           },
         ),
-        elevation: 0,
+        elevation: 0.4,
         title: Text(
           widget.blog.blogTitle,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black87,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -79,9 +79,9 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             Text(
               widget.blog.blogTitle,
               style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: Colors.black87,
               ),
             ),
             const SizedBox(height: 8),
@@ -122,14 +122,14 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             Text(
               widget.blog.intro,
               style: const TextStyle(
-                fontSize: 16,
-                color: Color.fromRGBO(201, 201, 201, 1),
-                fontWeight: FontWeight.w400,
+                fontSize: 14,
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 16),
             Card(
-              color: const Color(0xFF222224),
+              color: Color(0xFF348f6c),
               margin: const EdgeInsets.symmetric(vertical: 16.0),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -151,7 +151,7 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                         '- ${widget.blog.blockQuote.cite}',
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.grey,
+                          color: Colors.white,
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w700,
                         ),
@@ -173,9 +173,10 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                     Text(
                       section.title,
                       style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     for (var content in section.content)
@@ -187,15 +188,22 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
                             Text(
                               content.subtitle,
                               style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white),
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
                             ),
                             const SizedBox(height: 5),
-                            Text(
-                              content.details,
-                              style: const TextStyle(
-                                  fontSize: 16, color: Colors.white),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: Text(
+                                content.details,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -206,7 +214,11 @@ class _BlogDetailScreenState extends State<BlogDetailScreen> {
             const SizedBox(height: 16),
             Text(
               widget.blog.conclusion,
-              style: const TextStyle(fontSize: 16, color: Colors.white),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
