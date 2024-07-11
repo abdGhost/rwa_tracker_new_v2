@@ -14,13 +14,15 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromRGBO(20, 20, 22, 1.0),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        elevation: 0,
+        automaticallyImplyLeading: false,
+        elevation: 0.4,
+        backgroundColor: Colors.white, // Ensure AppBar is also white
         title: const Text(
-          'Videos',
+          'Video',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.w600,
           ),
         ),
