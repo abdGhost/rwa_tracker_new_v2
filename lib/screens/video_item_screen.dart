@@ -27,7 +27,7 @@ class _VideoItemState extends State<VideoItem> {
         setState(() {});
       },
       child: Card(
-        elevation: 2,
+        elevation: 0.5,
         color: Colors.white,
         margin: const EdgeInsets.all(8.0),
         child: Container(
@@ -44,8 +44,11 @@ class _VideoItemState extends State<VideoItem> {
                       bottomLeft: Radius.circular(4.0),
                     ),
                     image: DecorationImage(
-                      image: NetworkImage(widget.video.thumbnail),
-                      fit: BoxFit.cover,
+                      image: AssetImage(
+                        widget.video.thumbnail,
+                      ),
+                      // fit: BoxFit.cover,
+                      fit: BoxFit.fill,
                     ),
                   ),
                 ),

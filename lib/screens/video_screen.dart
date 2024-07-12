@@ -14,7 +14,8 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
+      backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0.4,

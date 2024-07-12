@@ -23,7 +23,8 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
+      backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
@@ -69,7 +70,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       ),
                       child: Card(
                         color: Colors.white, // White background for card
-                        elevation: 1, // No elevation
+                        elevation: 0.2, // No elevation
                         margin: const EdgeInsets.only(bottom: 10.0),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),

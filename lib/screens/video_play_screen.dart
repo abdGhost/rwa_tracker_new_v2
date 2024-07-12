@@ -95,17 +95,17 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
             children: [
               IconButton(
                 icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-                color: Colors.white,
+                color: Colors.black,
                 onPressed: _togglePlayPause,
               ),
               Text(
                 "${_formatDuration(_controller.value.position)} / ${_formatDuration(_controller.value.duration)}",
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(color: Colors.black),
               ),
               IconButton(
                 icon: Icon(
                     _isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen),
-                color: Colors.white,
+                color: Colors.black,
                 onPressed: _toggleFullScreen,
               ),
             ],

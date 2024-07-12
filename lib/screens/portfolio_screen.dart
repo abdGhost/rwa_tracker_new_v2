@@ -109,7 +109,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     double dynamicWidth = calculateTextWidth(percentageText, textStyle);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
+      backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
@@ -278,7 +279,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       itemBuilder: (context, index) {
                         final asset = _portfolioTokens[index];
                         return Card(
-                          elevation: 0.4,
+                          elevation: 0,
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),

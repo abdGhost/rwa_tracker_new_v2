@@ -24,44 +24,39 @@ class Video {
 
 List<Video> videos = [
   Video(
-    thumbnail: 'https://via.placeholder.com/100',
-    title: 'Learn Flutter & Dart',
-    description: 'A complete guide to the Flutter framework.',
+    thumbnail: 'assets/1.png',
+    title: 'Real-world Assets',
+    description:
+        'Real-world assets (RWAs) are tangible or intangible assets from the physical world, such as real estate, commodities, stocks, and art, that are represented and traded as tokens on a blockchain.',
     rating: 4.5,
-    duration: '3h 20m',
-    instructor: 'John Doe',
+    duration: '00:00:44',
+    instructor: 'Admin',
     ratingCount: 1500,
-    url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    url:
+        'https://res.cloudinary.com/dbtsrjssc/video/upload/v1720787408/WhatsApp_Video_2024-07-12_at_5.59.12_PM_ybrpii.mp4',
   ),
   Video(
-    thumbnail: 'https://via.placeholder.com/100',
-    title: 'Advanced Flutter',
-    description: 'Take your Flutter skills to the next level.',
+    thumbnail: 'assets/2.png',
+    title: 'Benefits of Real-World Assets',
+    description:
+        'Benefits of tokenizing real-world assets (RWAs) include increased liquidity, easier transferability, fractional ownership, enhanced transparency, and improved accessibility to a broader range of investors.',
     rating: 4.7,
-    duration: '5h 15m',
-    instructor: 'Jane Smith',
+    duration: '00:01:01',
+    instructor: 'Admin',
     ratingCount: 2000,
-    url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    url:
+        'https://res.cloudinary.com/dbtsrjssc/video/upload/v1720787901/WhatsApp_Video_2024-07-12_at_5.59.13_PM_fcumzk.mp4',
   ),
   Video(
-    thumbnail: 'https://via.placeholder.com/100',
-    title: 'Advanced Flutter',
-    description: 'Take your Flutter skills to the next level.',
+    thumbnail: 'assets/3.png',
+    title: 'Diversify Your Portfolio',
+    description:
+        'Investing in tokenized real-world assets allows for diversification by spreading investments across different sectors, which reduces risk. These assets, like real estate and commodities, often appreciate over time, providing a hedge against inflation and preserving purchasing power. Additionally, tokenized assets backed by tangible items offer more stability compared to purely digital assets, reducing overall portfolio volatility.',
     rating: 4.7,
-    duration: '5h 15m',
-    instructor: 'Jane Smith',
+    duration: '00:00:33',
+    instructor: 'Admin',
     ratingCount: 2000,
-    url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+    url:
+        'https://res.cloudinary.com/dbtsrjssc/video/upload/v1720788077/WhatsApp_Video_2024-07-12_at_5.59.13_PM_1_bwcfvx.mp4',
   ),
-  Video(
-    thumbnail: 'https://via.placeholder.com/100',
-    title: 'Advanced Flutter',
-    description: 'Take your Flutter skills to the next level.',
-    rating: 4.7,
-    duration: '5h 15m',
-    instructor: 'Jane Smith',
-    ratingCount: 2000,
-    url: 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-  ),
-  // Add more video instances here
 ];
