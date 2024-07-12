@@ -89,8 +89,25 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     return text[0].toUpperCase() + text.substring(1);
   }
 
+  double calculateTextWidth(String text, TextStyle style) {
+    final TextPainter textPainter = TextPainter(
+      text: TextSpan(text: text, style: style),
+      maxLines: 1,
+      textDirection: TextDirection.ltr,
+    )..layout(minWidth: 0, maxWidth: double.infinity);
+    return textPainter.size.width + 20; // Adding some padding
+  }
+
   @override
   Widget build(BuildContext context) {
+    String percentageText =
+        '${_totalPercentage.toStringAsFixed(2).replaceAll('-', '')}%';
+    TextStyle textStyle = TextStyle(
+      color: _totalPercentage >= 0 ? Colors.green : Colors.red,
+      fontWeight: FontWeight.bold,
+    );
+    double dynamicWidth = calculateTextWidth(percentageText, textStyle);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -216,7 +233,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                           top: 25,
                           right: 10,
                           child: Container(
-                            width: 80,
+                            width: dynamicWidth,
                             height: 30,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -232,13 +249,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                '${_totalPercentage.toStringAsFixed(2).replaceAll('-', '')}%',
-                                style: TextStyle(
-                                  color: _totalPercentage >= 0
-                                      ? Colors.green
-                                      : Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                percentageText,
+                                style: textStyle,
                               ),
                             ),
                           ),
