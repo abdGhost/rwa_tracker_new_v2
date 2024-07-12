@@ -189,57 +189,36 @@ class _AddCoinNewState extends State<AddCoinNew> {
     print(jwtToken);
 
     try {
-      // First API call to add the coin to the portfolio
-      final response1 = await http.get(
-        Uri.parse(
-            'http://192.168.1.22:5001/api/user/token/add/portfolio/$coinId'),
+      // Create the request payload for the API call
+      final Map<String, dynamic> payload = {
+        'amount': amount,
+        'quantity': quantity,
+      };
+
+      print('Payload111111');
+      print(payload);
+
+      // API call with the JWT token
+      final response = await http.post(
+        Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio/$coinId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $jwtToken',
         },
+        body: json.encode(payload),
       );
-      print('response1111111111-');
-      print(response1.body);
 
-      if (response1.statusCode == 200) {
-        // Handle success of the first API call
-        print('First API call successful');
+      if (response.statusCode == 200) {
+        // Handle success of the API call
+        print('API call successful');
+        print(response.body);
 
-        // Create the request payload for the second API call
-        final Map<String, dynamic> payload1 = {
-          'amount': amount,
-          'quantity': quantity,
-        };
-
-        print('Payload111111');
-        print(payload1);
-
-        // Second API call with the JWT token
-        final response2 = await http.post(
-          Uri.parse(
-              'http://192.168.1.22:5001/api/user/token/portfolio/$coinId'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $jwtToken',
-          },
-          body: json.encode(payload1),
-        );
-
-        if (response2.statusCode == 200) {
-          // Handle success of the second API call
-          print('Second API call successful');
-          print(response2.body);
-
-          setState(() {
-            _apiResult = json.decode(response2.body);
-          });
-        } else {
-          // Handle error of the second API call
-          print('Error in second API call: ${response2.statusCode}');
-        }
+        setState(() {
+          _apiResult = json.decode(response.body);
+        });
       } else {
-        // Handle error of the first API call
-        print('Error in first API call: ${response1.statusCode}');
+        // Handle error of the API call
+        print('Error in API call: ${response.statusCode}');
       }
     } catch (e) {
       print('Exception: $e');
@@ -261,15 +240,15 @@ class _AddCoinNewState extends State<AddCoinNew> {
             Navigator.of(context).pop();
           },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.add,
-              color: Color(0xFF34906c),
-            ),
-            onPressed: () {},
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(
+        //       Icons.add,
+        //       color: Color(0xFF34906c),
+        //     ),
+        //     onPressed: () {},
+        //   ),
+        // ],
         title: const Text(
           'Add Coin',
           style: TextStyle(
@@ -683,10 +662,6 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                       height: 40, // Set the height you desire
                                       child: ElevatedButton(
                                         onPressed: () {
-                                          setState(() {
-                                            // Trigger the calculation and UI update
-                                            // _calculateProfitOrLoss();
-                                          });
                                           // Submit the coin data
                                           _submitCoinData();
                                         },

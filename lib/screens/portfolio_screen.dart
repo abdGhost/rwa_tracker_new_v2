@@ -25,7 +25,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   void initState() {
     super.initState();
     _loadUserName();
-    _fetchPortfolio();
+    setState(() {
+      _fetchPortfolio();
+    });
   }
 
   Future<void> _loadUserName() async {
@@ -38,6 +40,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   Future<void> _fetchPortfolio() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
+    print(token);
 
     final response = await http.get(
       Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio'),
@@ -133,12 +136,15 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                             width: 40,
                             height: 40,
                             child: FloatingActionButton(
-                              onPressed: () {
-                                Navigator.of(context).push(
+                              onPressed: () async {
+                                final result = await Navigator.of(context).push(
                                   MaterialPageRoute(builder: (context) {
                                     return AddCoinNew();
                                   }),
                                 );
+                                if (result == true) {
+                                  _fetchPortfolio();
+                                }
                               },
                               child: const Icon(
                                 Icons.add,
