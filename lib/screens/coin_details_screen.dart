@@ -150,99 +150,103 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
         coinDetail.detail.marketData.priceChangePercentage24h ?? 0.0;
 
     return Padding(
-      padding: const EdgeInsets.only(left: 0, right: 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.symmetric(horizontal: 0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Image.network(
-                imageUrl,
-                width: 30,
-                height: 30,
-              ),
-              const SizedBox(width: 10),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: [
-                  Text(
-                    coinName,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
+                  Image.network(
+                    imageUrl,
+                    width: 30,
+                    height: 30,
+                  ),
+                  const SizedBox(width: 10),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        coinName,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      Text(
+                        coinSymbol,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(width: 100),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Icon(
+                    priceChange24h >= 0
+                        ? Icons.arrow_drop_up
+                        : Icons.arrow_drop_down,
+                    color: priceChange24h >= 0 ? Colors.green : Colors.red,
                   ),
                   Text(
-                    coinSymbol,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black54,
+                    '${priceChange24h.toStringAsFixed(2)}%',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: priceChange24h >= 0 ? Colors.green : Colors.red,
                     ),
+                    textAlign: TextAlign.start,
                   ),
                 ],
               ),
             ],
           ),
-          const SizedBox(
-            width: 100,
-          ),
-          Flexible(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-                border: Border.all(color: Colors.grey.withOpacity(0.2)),
-              ),
-              padding: const EdgeInsets.all(6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 5),
+          const SizedBox(height: 15),
+          Container(
+            width: 140,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(4),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.05),
+                  spreadRadius: 1,
+                  blurRadius: 2,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+            ),
+            padding: const EdgeInsets.all(6),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 5),
+                  child: Center(
                     child: Text(
                       '\$$currentPrice',
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Colors.black87,
                       ),
                       textAlign: TextAlign.start,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Icon(
-                        priceChange24h >= 0
-                            ? Icons.arrow_drop_up
-                            : Icons.arrow_drop_down,
-                        color: priceChange24h >= 0 ? Colors.green : Colors.red,
-                      ),
-                      Text(
-                        '${priceChange24h.toStringAsFixed(2)}%',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color:
-                              priceChange24h >= 0 ? Colors.green : Colors.red,
-                        ),
-                        textAlign: TextAlign.start,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -315,7 +319,8 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
   Widget _buildCoinDetails(CoinDetail coinDetail) {
     final marketData = coinDetail.detail.marketData;
     return Container(
-      color: Colors.white,
+      // color: Colors.white,
+      color: Color(0xfffFDFAF6),
       padding: const EdgeInsets.all(10.0),
       child: Column(
         children: [
