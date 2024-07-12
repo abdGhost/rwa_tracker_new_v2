@@ -7,7 +7,8 @@ import '../model/coin_detail.dart';
 import 'dart:async';
 
 class AddCoinNew extends StatefulWidget {
-  const AddCoinNew({super.key});
+  final ValueChanged<bool>? onBackCallback;
+  AddCoinNew({super.key, this.onBackCallback});
 
   @override
   State<AddCoinNew> createState() => _AddCoinNewState();
@@ -238,6 +239,9 @@ class _AddCoinNewState extends State<AddCoinNew> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
+            setState(() {
+              widget.onBackCallback!(true);
+            });
           },
         ),
         // actions: [

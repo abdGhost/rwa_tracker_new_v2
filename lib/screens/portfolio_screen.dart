@@ -14,6 +14,15 @@ class PortfolioScreen extends StatefulWidget {
 }
 
 class _PortfolioScreenState extends State<PortfolioScreen> {
+  bool onBack = false;
+
+  void _updateOnBack(bool value) {
+    setState(() {
+      onBack = value;
+      _fetchPortfolio();
+    });
+  }
+
   String? _userName;
   List<PortfolioToken> _portfolioTokens = [];
   bool _isLoading = true;
@@ -67,10 +76,17 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         _isLoading = false;
       });
       // Handle error
+      ScaffoldMessenger.of(context)
+          .hideCurrentSnackBar(); // Dismiss the current SnackBar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to load portfolio')),
       );
     }
+  }
+
+  String capitalizeFirstLetter(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1);
   }
 
   @override
@@ -139,7 +155,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                               onPressed: () async {
                                 final result = await Navigator.of(context).push(
                                   MaterialPageRoute(builder: (context) {
-                                    return AddCoinNew();
+                                    return AddCoinNew(
+                                      onBackCallback: _updateOnBack,
+                                    );
                                   }),
                                 );
                                 if (result == true) {
@@ -198,7 +216,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                           top: 25,
                           right: 10,
                           child: Container(
-                            width: 60,
+                            width: 80,
                             height: 30,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
@@ -248,7 +266,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       itemBuilder: (context, index) {
                         final asset = _portfolioTokens[index];
                         return Card(
-                          elevation: 0.3,
+                          elevation: 0.4,
                           color: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -273,7 +291,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        asset.symbol,
+                                        capitalizeFirstLetter(asset.name),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
@@ -284,7 +302,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        asset.name,
+                                        capitalizeFirstLetter(asset.symbol),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
