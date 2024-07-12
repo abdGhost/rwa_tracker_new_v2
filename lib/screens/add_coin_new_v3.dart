@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../api/api_service.dart';
 import '../model/coin_detail.dart';
@@ -30,6 +29,8 @@ class _AddCoinNewState extends State<AddCoinNew> {
   final ApiService _apiService = ApiService();
   Timer? _debounce;
 
+  Map<String, dynamic>? _apiResult;
+
   @override
   void initState() {
     super.initState();
@@ -57,12 +58,25 @@ class _AddCoinNewState extends State<AddCoinNew> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (_searchController.text.isNotEmpty) {
         _searchCoins(_searchController.text);
+        _clearFieldsAndApiResult();
       } else {
         setState(() {
           _searchResults = [];
           _showSearchResults = false;
         });
       }
+    });
+  }
+
+  void _clearFieldsAndApiResult() {
+    setState(() {
+      _amountController.clear();
+      _purchasePriceController.clear();
+      _quantityController.clear();
+      _dateController.clear();
+      _selectedCoin = null;
+      _coinDetails = null;
+      _apiResult = null;
     });
   }
 
@@ -144,105 +158,93 @@ class _AddCoinNewState extends State<AddCoinNew> {
     }
   }
 
-  String _calculateProfitOrLoss() {
-    // Check for empty inputs or null coin details
+  Future<void> _submitCoinData() async {
+    // Ensure all required fields are filled
     if (_amountController.text.isEmpty ||
         _purchasePriceController.text.isEmpty ||
         _quantityController.text.isEmpty ||
+        _dateController.text.isEmpty ||
         _coinDetails == null) {
-      return '';
+      // Show an error message or handle the validation as needed
+      return;
     }
 
-    // Parse input values
-    double amount =
-        double.parse(_amountController.text); // Total amount invested
-    double purchasePrice = double.parse(
-        _purchasePriceController.text); // Price per unit at purchase
-    double quantity =
-        double.parse(_quantityController.text); // Quantity purchased
-    double currentPrice = _coinDetails?.detail.marketData.currentPrice['usd'] ??
-        0; // Current price per unit
+    // Gather the values from the text fields
+    final double amount = double.parse(_amountController.text);
+    final double purchasePrice = double.parse(_purchasePriceController.text);
+    final double quantity = double.parse(_quantityController.text);
+    final String date = _dateController.text;
+    final String coinId = _selectedCoin['id'];
+    print(coinId);
 
-    // Calculate total purchase price and total current price
-    double totalPurchasePrice =
-        purchasePrice * quantity; // Total initial investment
-    double totalCurrentPrice =
-        currentPrice * quantity; // Current total value of investment
+    // Retrieve JWT token from local storage
+    final prefs = await SharedPreferences.getInstance();
+    final jwtToken = prefs.getString('token');
 
-    // Calculate profit or loss
-    double profitOrLoss =
-        totalCurrentPrice - totalPurchasePrice; // Absolute profit or loss
+    if (jwtToken == null) {
+      print('JWT token not found in local storage');
+      return;
+    }
 
-    // Calculate percentage only if totalPurchasePrice is not zero
-    double percentage =
-        totalPurchasePrice != 0 ? (profitOrLoss / totalPurchasePrice) * 100 : 0;
+    print(jwtToken);
 
-    // Debug prints
-    print('Amount: $amount');
-    print('Purchase Price per Unit: $purchasePrice');
-    print('Quantity: $quantity');
-    print('Current Price per Unit: $currentPrice');
-    print('Total Purchase Price: $totalPurchasePrice');
-    print('Total Current Price: $totalCurrentPrice');
-    print('Profit or Loss: $profitOrLoss');
-    print('Percentage: $percentage');
+    try {
+      // First API call to add the coin to the portfolio
+      final response1 = await http.get(
+        Uri.parse(
+            'http://192.168.1.22:5001/api/user/token/add/portfolio/$coinId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $jwtToken',
+        },
+      );
+      print('response1111111111-');
+      print(response1.body);
 
-    // Determine result message
-    String result = profitOrLoss >= 0
-        ? 'Profit: \$${profitOrLoss.toStringAsFixed(2)} (${percentage.toStringAsFixed(2)}%)'
-        : 'Loss: \$${profitOrLoss.abs().toStringAsFixed(2)} (${percentage.abs().toStringAsFixed(2)}%)';
+      if (response1.statusCode == 200) {
+        // Handle success of the first API call
+        print('First API call successful');
 
-    return result;
+        // Create the request payload for the second API call
+        final Map<String, dynamic> payload1 = {
+          'amount': amount,
+          'quantity': quantity,
+        };
+
+        print('Payload111111');
+        print(payload1);
+
+        // Second API call with the JWT token
+        final response2 = await http.post(
+          Uri.parse(
+              'http://192.168.1.22:5001/api/user/token/portfolio/$coinId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $jwtToken',
+          },
+          body: json.encode(payload1),
+        );
+
+        if (response2.statusCode == 200) {
+          // Handle success of the second API call
+          print('Second API call successful');
+          print(response2.body);
+
+          setState(() {
+            _apiResult = json.decode(response2.body);
+          });
+        } else {
+          // Handle error of the second API call
+          print('Error in second API call: ${response2.statusCode}');
+        }
+      } else {
+        // Handle error of the first API call
+        print('Error in first API call: ${response1.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
   }
-
-  // Future<void> _submitCoinData() async {
-  //   print('calling api');
-  //   // Ensure all required fields are filled
-  //   if (_amountController.text.isEmpty ||
-  //       _purchasePriceController.text.isEmpty ||
-  //       _quantityController.text.isEmpty ||
-  //       _dateController.text.isEmpty ||
-  //       _coinDetails == null) {
-  //     // Show an error message or handle the validation as needed
-  //     return;
-  //   }
-
-  //   // Gather the values from the text fields
-  //   final double amount = double.parse(_amountController.text);
-  //   final double purchasePrice = double.parse(_purchasePriceController.text);
-  //   final double quantity = double.parse(_quantityController.text);
-  //   final String date = _dateController.text;
-  //   final String coinId = _selectedCoin['id'];
-
-  //   // Create the request payload
-  //   final Map<String, dynamic> payload = {
-  //     'amount': amount,
-  //     'purchasePrice': purchasePrice,
-  //     'quantity': quantity,
-  //     'date': date,
-  //     'coinId': coinId,
-  //   };
-
-  //   // Make the API call
-  //   try {
-  //     final response = await http.post(
-  //       Uri.parse(
-  //           'https://yourapiendpoint.com/submitCoinData'), // Replace with your API endpoint
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: json.encode(payload),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       // Handle success
-  //       print('Data submitted successfully');
-  //     } else {
-  //       // Handle error
-  //       print('Error submitting data: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Exception: $e');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -477,7 +479,7 @@ class _AddCoinNewState extends State<AddCoinNew> {
                             ),
                             const SizedBox(height: 30.0),
                             Container(
-                              height: 260,
+                              height: 300,
                               decoration: BoxDecoration(
                                 border: Border.all(color: Colors.grey),
                                 borderRadius: BorderRadius.circular(10),
@@ -683,10 +685,10 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                         onPressed: () {
                                           setState(() {
                                             // Trigger the calculation and UI update
-                                            _calculateProfitOrLoss();
+                                            // _calculateProfitOrLoss();
                                           });
                                           // Submit the coin data
-                                          // _submitCoinData();
+                                          _submitCoinData();
                                         },
                                         style: ElevatedButton.styleFrom(
                                           foregroundColor: Colors.white,
@@ -708,14 +710,43 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                       ),
                                     ),
                                   ),
+
+                                  // Display API result
+                                  if (_apiResult != null) ...[
+                                    const SizedBox(height: 25.0),
+                                    Text(
+                                      _apiResult!['tokenPortfolio']['return'] <
+                                              0
+                                          ? 'Loss: ${_apiResult!['tokenPortfolio']['returnPercentage']}%'
+                                          : 'Profit: ${_apiResult!['tokenPortfolio']['returnPercentage']}%',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w700,
+                                        color: _apiResult!['tokenPortfolio']
+                                                    ['return'] <
+                                                0
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                    ),
+                                    Text(
+                                      _apiResult!['tokenPortfolio']['return'] <
+                                              0
+                                          ? 'Loss: ${_apiResult!['tokenPortfolio']['return']}'
+                                          : 'Profit: ${_apiResult!['tokenPortfolio']['return']}',
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.w700,
+                                        color: _apiResult!['tokenPortfolio']
+                                                    ['return'] <
+                                                0
+                                            ? Colors.red
+                                            : Colors.green,
+                                      ),
+                                    ),
+                                  ],
                                 ],
                               ),
-                            ),
-                            const SizedBox(height: 16.0),
-                            Text(
-                              _calculateProfitOrLoss(),
-                              style: const TextStyle(
-                                  fontSize: 18.0, color: Colors.black54),
                             ),
                           ],
                         ),
