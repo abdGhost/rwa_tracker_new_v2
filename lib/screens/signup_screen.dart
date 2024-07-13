@@ -46,6 +46,13 @@ class SignupResponse {
       message: json['message'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'message': message,
+    };
+  }
 }
 
 // Function to call the signup API
@@ -108,16 +115,26 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       SignupResponse signupResponse = await signup(signupRequest);
 
+      // Print the API response
+      print('API Response: ${jsonEncode(signupResponse.toJson())}');
+
       if (signupResponse.status) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(signupResponse.message)),
         );
 
-        // Navigate to the BottomNavigation screen if signup is successful
-        Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (context) {
-          return const BottomNavigation();
-        }));
+        if (signupResponse.message == "Check your email for verification!") {
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (context) {
+            return const LoginScreen();
+          }));
+        } else {
+          // Navigate to the BottomNavigation screen if signup is successful
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (context) {
+            return const BottomNavigation();
+          }));
+        }
       } else {
         // Show error message if signup fails
         ScaffoldMessenger.of(context).showSnackBar(

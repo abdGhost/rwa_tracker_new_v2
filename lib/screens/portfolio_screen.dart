@@ -52,7 +52,8 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     print(token);
 
     final response = await http.get(
-      Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio'),
+      Uri.parse(
+          'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -62,6 +63,12 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      if (data['status'] == false) {
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
       setState(() {
         _portfolioTokens = (data['portfolioToken'] as List)
             .map((item) => PortfolioToken.fromJson(item))
@@ -83,6 +90,44 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
       );
     }
   }
+
+  // Future<void> _fetchPortfolio() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   String? token = prefs.getString('token');
+  //   print(token);
+
+  //   final response = await http.get(
+  //     Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio'),
+  //     headers: {
+  //       'Authorization': 'Bearer $token',
+  //     },
+  //   );
+
+  //   print(response.body);
+
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     setState(() {
+  //       _portfolioTokens = (data['portfolioToken'] as List)
+  //           .map((item) => PortfolioToken.fromJson(item))
+  //           .toList();
+  //       _totalReturn = (data['totalReturn'] as num).toDouble();
+  //       _totalPercentage = (data['totalPercentage'] as num).toDouble();
+  //       _totalAmount = (data['totalAmount'] as num).toDouble();
+  //       _isLoading = false;
+  //     });
+  //   } else {
+  //     setState(() {
+  //       _isLoading = false;
+  //     });
+  //     // Handle error
+  //     ScaffoldMessenger.of(context)
+  //         .hideCurrentSnackBar(); // Dismiss the current SnackBar
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Failed to load portfolio')),
+  //     );
+  //   }
+  // }
 
   String capitalizeFirstLetter(String text) {
     if (text.isEmpty) return text;
