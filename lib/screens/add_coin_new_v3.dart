@@ -24,6 +24,7 @@ class _AddCoinNewState extends State<AddCoinNew> {
   List<dynamic> _searchResults = [];
   bool _isLoading = false;
   bool _showSearchResults = true;
+  bool _isCalculating = false;
   dynamic _selectedCoin;
   CoinDetail? _coinDetails;
   DateTime? _selectedDate;
@@ -170,6 +171,10 @@ class _AddCoinNewState extends State<AddCoinNew> {
       return;
     }
 
+    setState(() {
+      _isCalculating = true;
+    });
+
     // Gather the values from the text fields
     final double amount = double.parse(_amountController.text);
     final double purchasePrice = double.parse(_purchasePriceController.text);
@@ -184,6 +189,9 @@ class _AddCoinNewState extends State<AddCoinNew> {
 
     if (jwtToken == null) {
       print('JWT token not found in local storage');
+      setState(() {
+        _isCalculating = false;
+      });
       return;
     }
 
@@ -226,6 +234,10 @@ class _AddCoinNewState extends State<AddCoinNew> {
     } catch (e) {
       print('Exception: $e');
     }
+
+    setState(() {
+      _isCalculating = false;
+    });
   }
 
   @override
@@ -246,15 +258,6 @@ class _AddCoinNewState extends State<AddCoinNew> {
             });
           },
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(
-        //       Icons.add,
-        //       color: Color(0xFF34906c),
-        //     ),
-        //     onPressed: () {},
-        //   ),
-        // ],
         title: const Text(
           'Add Coin',
           style: TextStyle(
@@ -667,10 +670,12 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                       width: 140, // Set the width you desire
                                       height: 40, // Set the height you desire
                                       child: ElevatedButton(
-                                        onPressed: () {
-                                          // Submit the coin data
-                                          _submitCoinData();
-                                        },
+                                        onPressed: _isCalculating
+                                            ? null
+                                            : () {
+                                                // Submit the coin data
+                                                _submitCoinData();
+                                              },
                                         style: ElevatedButton.styleFrom(
                                           foregroundColor: Colors.white,
                                           backgroundColor:
@@ -680,14 +685,24 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                                 25.0), // Set your desired border radius here
                                           ),
                                         ),
-                                        child: const Text(
-                                          'Calculate',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
+                                        child: _isCalculating
+                                            ? const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Colors.white,
+                                                  strokeWidth: 2.0,
+                                                ),
+                                              )
+                                            : const Text(
+                                                'Calculate',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
                                       ),
                                     ),
                                   ),
@@ -698,8 +713,8 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                     Text(
                                       _apiResult!['tokenPortfolio']['return'] <
                                               0
-                                          ? 'Loss: ${_apiResult!['tokenPortfolio']['returnPercentage']}%'
-                                          : 'Profit: ${_apiResult!['tokenPortfolio']['returnPercentage']}%',
+                                          ? 'Loss: ${_apiResult!['tokenPortfolio']['returnPercentage'].abs()}%'
+                                          : 'Profit: ${_apiResult!['tokenPortfolio']['returnPercentage'].abs()}%',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.w700,
@@ -713,8 +728,8 @@ class _AddCoinNewState extends State<AddCoinNew> {
                                     Text(
                                       _apiResult!['tokenPortfolio']['return'] <
                                               0
-                                          ? 'Loss: ${_apiResult!['tokenPortfolio']['return']}'
-                                          : 'Profit: ${_apiResult!['tokenPortfolio']['return']}',
+                                          ? 'Loss: ${_apiResult!['tokenPortfolio']['return'].abs()}'
+                                          : 'Profit: ${_apiResult!['tokenPortfolio']['return'].abs()}',
                                       style: TextStyle(
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.w700,

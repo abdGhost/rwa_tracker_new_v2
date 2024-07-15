@@ -169,7 +169,10 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         ),
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Color(0xFF348f6c),
+            ))
           : Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
