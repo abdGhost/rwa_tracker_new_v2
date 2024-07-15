@@ -20,14 +20,23 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.video.url)
-      ..initialize().then((_) {
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(widget.video.url),
+    )..initialize().then((_) {
         setState(() {
-          _isPlaying = _controller.value.isPlaying;
+          _controller.play(); // Start playing the video once initialized
+          _isPlaying = true; // Assume video is playing after initialization
         });
       });
 
     _controller.addListener(() {
+      final bool isPlaying = _controller.value.isPlaying;
+      if (isPlaying != _isPlaying) {
+        setState(() {
+          _isPlaying = isPlaying;
+        });
+      }
+
       setState(() {
         widget.video.progress = _controller.value.position.inSeconds /
             _controller.value.duration.inSeconds;
@@ -50,8 +59,12 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
 
   void _togglePlayPause() {
     setState(() {
+      if (_isPlaying) {
+        _controller.pause();
+      } else {
+        _controller.play();
+      }
       _isPlaying = !_isPlaying;
-      _isPlaying ? _controller.play() : _controller.pause();
     });
   }
 
@@ -186,7 +199,9 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
                   ],
                 ),
               )
-            : const CircularProgressIndicator(),
+            : const CircularProgressIndicator(
+                color: Color(0xFF348f6c),
+              ),
       ),
     );
   }

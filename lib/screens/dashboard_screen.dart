@@ -54,16 +54,101 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }));
   }
 
+  Future<bool?> _showLogoutConfirmationDialog() async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Color(0xffFDFAF6),
+          title: Center(
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Color(0xFF348f6c),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Icon(
+                Icons.logout,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Are You Sure?',
+                      style: TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Do you really want to logout?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black45,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[400],
+              ),
+              child: Text(
+                'Logout',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor:
-      //     Colors.white, // Set background color of Scaffold to white
       backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
         automaticallyImplyLeading: false,
         elevation: 0,
-        backgroundColor: Colors.white, // Ensure AppBar is also white
+        backgroundColor: Colors.white,
         title: const Text(
           'Home',
           style: TextStyle(
@@ -74,7 +159,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.black),
-            onPressed: _logout,
+            onPressed: () async {
+              bool? result = await _showLogoutConfirmationDialog();
+              if (result == true) {
+                _logout();
+              }
+            },
           ),
         ],
       ),
@@ -204,19 +294,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
               return Container(
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
-                  // color: Colors.white, // Ensure container is also white
                   color: Color(0xFFfbf2e6),
                   borderRadius: const BorderRadius.all(Radius.circular(8.0)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.2), // Shadow color
-                      spreadRadius: 2, // Spread radius
-                      blurRadius: 5, // Blur radius
-                      offset: const Offset(0, 3), // Shadow position
+                      color: Colors.grey.withOpacity(0.2),
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
                     ),
                   ],
-                  border: Border.all(
-                      color: Colors.grey.withOpacity(0.2)), // Add border
+                  border: Border.all(color: Colors.grey.withOpacity(0.2)),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
@@ -381,11 +469,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         })));
       },
       child: Card(
-        color: Colors.white, // Set card color to white
-        elevation: 0.0, // Elevation remains zero
+        color: Colors.white,
+        elevation: 0.0,
         margin: const EdgeInsets.only(bottom: 10.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0), // Adjust the border radius
+          borderRadius: BorderRadius.circular(8.0),
         ),
         child: Container(
           decoration: BoxDecoration(
@@ -393,14 +481,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
             borderRadius: BorderRadius.circular(8.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.2), // Shadow color
-                spreadRadius: 2, // Spread radius
-                blurRadius: 5, // Blur radius
-                offset: const Offset(0, 3), // Shadow position
+                color: Colors.grey.withOpacity(0.2),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: const Offset(0, 3),
               ),
             ],
-            border:
-                Border.all(color: Colors.grey.withOpacity(0.1)), // Add border
+            border: Border.all(color: Colors.grey.withOpacity(0.1)),
           ),
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -413,8 +500,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   errorBuilder: (context, error, stackTrace) =>
                       const Icon(Icons.error),
                 ),
-                const SizedBox(
-                    width: 10), // Adjust space between image and text
+                const SizedBox(width: 10),
                 Expanded(
                   flex: 3,
                   child: Column(
@@ -441,14 +527,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 if (currency.sparklineIn7D?.price != null)
                   SizedBox(
-                    width: 80, // Adjust the width of the sparkline graph
+                    width: 80,
                     child: _buildSparkline(
                       currency.sparklineIn7D!.price,
                       priceColor,
                     ),
                   ),
-                const SizedBox(
-                    width: 30), // Reduce the space between graph and text
+                const SizedBox(width: 30),
                 SizedBox(
                   width: 80,
                   child: Column(
@@ -484,7 +569,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildSparkline(List<double> prices, Color lineColor) {
     return SizedBox(
       height: 50,
-      width: 100, // Specify a width for the sparkline graph
+      width: 100,
       child: LineChart(
         LineChartData(
           lineBarsData: [
