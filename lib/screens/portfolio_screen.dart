@@ -17,11 +17,12 @@ class PortfolioScreen extends StatefulWidget {
 class _PortfolioScreenState extends State<PortfolioScreen> {
   bool onBack = false;
 
-  void _updateOnBack(bool value) {
+  void _updateOnBack(bool value, [String? assetId]) {
     setState(() {
       onBack = value;
-      _fetchPortfolio();
+      _editedAssetId = assetId;
     });
+    _fetchPortfolio();
   }
 
   String? _userName;
@@ -30,14 +31,13 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
   double _totalReturn = 0.0;
   double _totalPercentage = 0.0;
   double _totalAmount = 0.0;
+  String? _editedAssetId; // Add this variable
 
   @override
   void initState() {
     super.initState();
     _loadUserName();
-    setState(() {
-      _fetchPortfolio();
-    });
+    _fetchPortfolio();
   }
 
   Future<void> _loadUserName() async {
@@ -108,6 +108,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('************************************');
+    print(_editedAssetId);
+
     String percentageText =
         '${_totalPercentage.toStringAsFixed(2).replaceAll('-', '')}%';
     TextStyle textStyle = TextStyle(
@@ -117,7 +120,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     double dynamicWidth = calculateTextWidth(percentageText, textStyle);
 
     return Scaffold(
-      // backgroundColor: Colors.white,
       backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -299,15 +301,31 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                               }),
                             );
                             if (result == true) {
+                              setState(() {
+                                _editedAssetId =
+                                    asset.tokenId; // Set the edited asset ID
+                              });
                               _fetchPortfolio();
                             }
                           },
                           child: Card(
                             elevation: 0,
                             color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            // shape: RoundedRectangleBorder(
+                            //   borderRadius: BorderRadius.circular(10),
+                            // ),
+                            shape: _editedAssetId == asset.tokenId
+                                ? new RoundedRectangleBorder(
+                                    side: new BorderSide(
+                                      color: Color(0xFF348f6c),
+                                      width: 1.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(4.0))
+                                : new RoundedRectangleBorder(
+                                    side: new BorderSide(
+                                        color: Colors.white, width: 1.0),
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
                             clipBehavior: Clip.antiAliasWithSaveLayer,
                             child: Padding(
                               padding: const EdgeInsets.all(15),

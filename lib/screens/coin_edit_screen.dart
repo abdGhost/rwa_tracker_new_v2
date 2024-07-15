@@ -6,10 +6,10 @@ import '../model/portfolio/crypto_asset.dart';
 import 'package:http/http.dart' as http;
 
 class CoinEditScreen extends StatefulWidget {
-  final ValueChanged<bool>? onBackCallback;
+  final Function(bool, String?) onBackCallback;
   final PortfolioToken asset;
 
-  CoinEditScreen({required this.asset, this.onBackCallback});
+  CoinEditScreen({required this.asset, required this.onBackCallback});
 
   @override
   State<CoinEditScreen> createState() => _CoinEditScreenState();
@@ -72,10 +72,8 @@ class _CoinEditScreenState extends State<CoinEditScreen> {
             color: Color(0xFF34906c),
           ),
           onPressed: () {
-            Navigator.of(context).pop();
-            setState(() {
-              widget.onBackCallback!(true);
-            });
+            widget.onBackCallback(true, widget.asset.tokenId);
+            Navigator.pop(context, true);
           },
         ),
         title: const Text(
