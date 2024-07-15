@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../model/portfolio/crypto_asset.dart';
+import 'coin_edit_screen.dart'; // Import the CoinEditScreen
 
 class PortfolioScreen extends StatefulWidget {
   const PortfolioScreen({super.key});
@@ -90,44 +91,6 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
       );
     }
   }
-
-  // Future<void> _fetchPortfolio() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   String? token = prefs.getString('token');
-  //   print(token);
-
-  //   final response = await http.get(
-  //     Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio'),
-  //     headers: {
-  //       'Authorization': 'Bearer $token',
-  //     },
-  //   );
-
-  //   print(response.body);
-
-  //   if (response.statusCode == 200) {
-  //     final data = json.decode(response.body);
-  //     setState(() {
-  //       _portfolioTokens = (data['portfolioToken'] as List)
-  //           .map((item) => PortfolioToken.fromJson(item))
-  //           .toList();
-  //       _totalReturn = (data['totalReturn'] as num).toDouble();
-  //       _totalPercentage = (data['totalPercentage'] as num).toDouble();
-  //       _totalAmount = (data['totalAmount'] as num).toDouble();
-  //       _isLoading = false;
-  //     });
-  //   } else {
-  //     setState(() {
-  //       _isLoading = false;
-  //     });
-  //     // Handle error
-  //     ScaffoldMessenger.of(context)
-  //         .hideCurrentSnackBar(); // Dismiss the current SnackBar
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Failed to load portfolio')),
-  //     );
-  //   }
-  // }
 
   String capitalizeFirstLetter(String text) {
     if (text.isEmpty) return text;
@@ -326,33 +289,75 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       itemCount: _portfolioTokens.length,
                       itemBuilder: (context, index) {
                         final asset = _portfolioTokens[index];
-                        return Card(
-                          elevation: 0,
-                          color: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          child: Padding(
-                            padding: const EdgeInsets.all(15),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Image.network(
-                                  asset.image,
-                                  width: 30,
-                                  height: 30,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Icon(Icons.error),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                        return GestureDetector(
+                          onTap: () async {
+                            final result = await Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) {
+                                return CoinEditScreen(
+                                    asset: asset,
+                                    onBackCallback: _updateOnBack);
+                              }),
+                            );
+                            if (result == true) {
+                              _fetchPortfolio();
+                            }
+                          },
+                          child: Card(
+                            elevation: 0,
+                            color: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Image.network(
+                                    asset.image,
+                                    width: 30,
+                                    height: 30,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Icon(Icons.error),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          capitalizeFirstLetter(asset.name),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          capitalizeFirstLetter(asset.symbol),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: <Widget>[
                                       Text(
-                                        capitalizeFirstLetter(asset.name),
+                                        '\$${asset.portfolioTokenReturn.toStringAsFixed(2).replaceAll('-', '')}',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
@@ -361,61 +366,34 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                           fontWeight: FontWeight.w700,
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        capitalizeFirstLetter(asset.symbol),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.black54,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const Spacer(),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Text(
-                                      '\$${asset.portfolioTokenReturn.toStringAsFixed(2).replaceAll('-', '')}',
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 1),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          asset.returnPercentage >= 0
-                                              ? Icons.arrow_drop_up
-                                              : Icons.arrow_drop_down,
-                                          color: asset.returnPercentage >= 0
-                                              ? Color(0xFF348f6c)
-                                              : Colors.red,
-                                          size: 28,
-                                        ),
-                                        Text(
-                                          '${asset.returnPercentage.toStringAsFixed(2).replaceAll('-', '')}%',
-                                          style: TextStyle(
+                                      const SizedBox(height: 1),
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            asset.returnPercentage >= 0
+                                                ? Icons.arrow_drop_up
+                                                : Icons.arrow_drop_down,
                                             color: asset.returnPercentage >= 0
                                                 ? Color(0xFF348f6c)
                                                 : Colors.red,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 12,
+                                            size: 28,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                          Text(
+                                            '${asset.returnPercentage.toStringAsFixed(2).replaceAll('-', '')}%',
+                                            style: TextStyle(
+                                              color: asset.returnPercentage >= 0
+                                                  ? Color(0xFF348f6c)
+                                                  : Colors.red,
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );
