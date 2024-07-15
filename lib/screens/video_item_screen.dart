@@ -16,7 +16,7 @@ class _VideoItemState extends State<VideoItem> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-        final result = await Navigator.of(context).push(
+        await Navigator.of(context).push(
           MaterialPageRoute(builder: (context) {
             return VideoPlayScreen(
               video: widget.video,

@@ -147,7 +147,7 @@ class _CoinDetailsScreenState extends State<CoinDetailsScreen> {
     final currentPrice =
         coinDetail.detail.marketData.currentPrice['usd'] ?? 0.0;
     final priceChange24h =
-        coinDetail.detail.marketData.priceChangePercentage24h ?? 0.0;
+        coinDetail.detail.marketData.priceChangePercentage24h;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0),

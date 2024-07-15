@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'screens/bottom_navigation.dart';
 import 'screens/splash_screen.dart';
 
 var kColorScheme = ColorScheme.fromSeed(

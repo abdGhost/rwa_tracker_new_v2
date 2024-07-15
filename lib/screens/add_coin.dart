@@ -124,7 +124,6 @@ class _AddCoinScreenState extends State<AddCoinScreen> {
 
   List<double> _runMonteCarloSimulation(double initialPrice, int days) {
     List<double> pricePath = [initialPrice];
-    Random rand = Random();
 
     for (int i = 1; i <= days; i++) {
       double dailyReturn =

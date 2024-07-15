@@ -177,9 +177,9 @@ class _AddCoinNewState extends State<AddCoinNew> {
 
     // Gather the values from the text fields
     final double amount = double.parse(_amountController.text);
-    final double purchasePrice = double.parse(_purchasePriceController.text);
+    // final double purchasePrice = double.parse(_purchasePriceController.text);
     final double quantity = double.parse(_quantityController.text);
-    final String date = _dateController.text;
+    // final String date = _dateController.text;
     final String coinId = _selectedCoin['id'];
     print(coinId);
 
