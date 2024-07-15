@@ -53,13 +53,15 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     print(token);
 
     final response = await http.get(
-      Uri.parse(
-          'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio'),
+      // Uri.parse(
+      //     'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio'),
+      Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio'),
       headers: {
         'Authorization': 'Bearer $token',
       },
     );
 
+    print('*************************************************************');
     print(response.body);
 
     if (response.statusCode == 200) {
@@ -90,6 +92,128 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
         SnackBar(content: Text('Failed to load portfolio')),
       );
     }
+  }
+
+  Future<void> _deleteAsset(String tokenId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    final response = await http.delete(
+      // Uri.parse(
+      //     'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio/$tokenId'),
+      Uri.parse(
+          'http://192.168.1.22:5001/api/user/token/remove/portfolio/$tokenId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    print('Delete response ----------------->');
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _portfolioTokens.removeWhere((token) => token.tokenId == tokenId);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Asset deleted successfully')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete asset')),
+      );
+    }
+  }
+
+  Future<bool?> _showDeleteConfirmationDialog(String tokenId) async {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // User must tap button to dismiss
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Color(0xffFDFAF6),
+          title: Center(
+            child: Container(
+              width: 60,
+              height: 60,
+              decoration: BoxDecoration(
+                color: Color(0xFF348f6c),
+                borderRadius: BorderRadius.circular(50), // Rounded border
+              ),
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Are You Sure?',
+                      style: TextStyle(
+                        color: Color(0xFF707070),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Do you really want to delete this coin? You will not be able to undo this action.',
+                      textAlign: TextAlign.center, // Center align text
+                      style: TextStyle(
+                        color: Colors.black45,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            OutlinedButton(
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red[400], // Background color
+              ),
+              child: Text(
+                'Delete',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  _deleteAsset(tokenId);
+                  // _fetchPortfolio();
+                  Navigator.of(context).pop(true);
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   String capitalizeFirstLetter(String text) {
@@ -291,63 +415,105 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                       itemCount: _portfolioTokens.length,
                       itemBuilder: (context, index) {
                         final asset = _portfolioTokens[index];
-                        return GestureDetector(
-                          onTap: () async {
-                            final result = await Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) {
-                                return CoinEditScreen(
-                                    asset: asset,
-                                    onBackCallback: _updateOnBack);
-                              }),
-                            );
-                            if (result == true) {
-                              setState(() {
-                                _editedAssetId =
-                                    asset.tokenId; // Set the edited asset ID
-                              });
-                              _fetchPortfolio();
-                            }
+                        return Dismissible(
+                          key: Key(asset.tokenId),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction) async {
+                            return await _showDeleteConfirmationDialog(
+                                asset.tokenId);
                           },
-                          child: Card(
-                            elevation: 0,
-                            color: Colors.white,
-                            // shape: RoundedRectangleBorder(
-                            //   borderRadius: BorderRadius.circular(10),
-                            // ),
-                            shape: _editedAssetId == asset.tokenId
-                                ? new RoundedRectangleBorder(
-                                    side: new BorderSide(
-                                      color: Color(0xFF348f6c),
-                                      width: 1.0,
+                          background: Container(
+                            color: Colors.red,
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                            ),
+                          ),
+                          child: GestureDetector(
+                            onTap: () async {
+                              final result = await Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) {
+                                  return CoinEditScreen(
+                                      asset: asset,
+                                      onBackCallback: _updateOnBack);
+                                }),
+                              );
+                              if (result == true) {
+                                setState(() {
+                                  _editedAssetId =
+                                      asset.tokenId; // Set the edited asset ID
+                                });
+                                _fetchPortfolio();
+                              }
+                            },
+                            child: Card(
+                              elevation: 0,
+                              color: Colors.white,
+                              shape: _editedAssetId == asset.tokenId
+                                  ? new RoundedRectangleBorder(
+                                      side: new BorderSide(
+                                        color: Color(0xFF348f6c),
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4.0))
+                                  : new RoundedRectangleBorder(
+                                      side: new BorderSide(
+                                          color: Colors.white, width: 1.0),
+                                      borderRadius: BorderRadius.circular(4.0),
                                     ),
-                                    borderRadius: BorderRadius.circular(4.0))
-                                : new RoundedRectangleBorder(
-                                    side: new BorderSide(
-                                        color: Colors.white, width: 1.0),
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            child: Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  Image.network(
-                                    asset.image,
-                                    width: 30,
-                                    height: 30,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Icon(Icons.error),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Expanded(
-                                    child: Column(
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              child: Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Image.network(
+                                      asset.image,
+                                      width: 30,
+                                      height: 30,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              Icon(Icons.error),
+                                    ),
+                                    const SizedBox(width: 20),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            capitalizeFirstLetter(asset.name),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black87,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            capitalizeFirstLetter(asset.symbol),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.black54,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                          CrossAxisAlignment.end,
                                       children: <Widget>[
                                         Text(
-                                          capitalizeFirstLetter(asset.name),
+                                          '\$${asset.portfolioTokenReturn.toStringAsFixed(2).replaceAll('-', '')}',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: const TextStyle(
@@ -356,61 +522,35 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
                                             fontWeight: FontWeight.w700,
                                           ),
                                         ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          capitalizeFirstLetter(asset.symbol),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.black54,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: <Widget>[
-                                      Text(
-                                        '\$${asset.portfolioTokenReturn.toStringAsFixed(2).replaceAll('-', '')}',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 1),
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            asset.returnPercentage >= 0
-                                                ? Icons.arrow_drop_up
-                                                : Icons.arrow_drop_down,
-                                            color: asset.returnPercentage >= 0
-                                                ? Color(0xFF348f6c)
-                                                : Colors.red,
-                                            size: 28,
-                                          ),
-                                          Text(
-                                            '${asset.returnPercentage.toStringAsFixed(2).replaceAll('-', '')}%',
-                                            style: TextStyle(
+                                        const SizedBox(height: 1),
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              asset.returnPercentage >= 0
+                                                  ? Icons.arrow_drop_up
+                                                  : Icons.arrow_drop_down,
                                               color: asset.returnPercentage >= 0
                                                   ? Color(0xFF348f6c)
                                                   : Colors.red,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 12,
+                                              size: 28,
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                            Text(
+                                              '${asset.returnPercentage.toStringAsFixed(2).replaceAll('-', '')}%',
+                                              style: TextStyle(
+                                                color:
+                                                    asset.returnPercentage >= 0
+                                                        ? Color(0xFF348f6c)
+                                                        : Colors.red,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
