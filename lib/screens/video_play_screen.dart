@@ -4,7 +4,7 @@ import 'package:video_player/video_player.dart';
 import '../model/video_model.dart';
 
 class VideoPlayScreen extends StatefulWidget {
-  final Video video;
+  final Lecture video;
 
   const VideoPlayScreen({super.key, required this.video});
 
@@ -20,7 +20,7 @@ class _VideoPlayScreenState extends State<VideoPlayScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.video.url))
+    _controller = VideoPlayerController.network(widget.video.url)
       ..initialize().then((_) {
         setState(() {
           _isPlaying = _controller.value.isPlaying;

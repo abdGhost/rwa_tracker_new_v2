@@ -3,7 +3,7 @@ import 'package:rwatrackernew/screens/video_play_screen.dart';
 import '../model/video_model.dart';
 
 class VideoItem extends StatefulWidget {
-  final Video video;
+  final Lecture video;
 
   const VideoItem({super.key, required this.video});
 
@@ -44,7 +44,7 @@ class _VideoItemState extends State<VideoItem> {
                       bottomLeft: Radius.circular(4.0),
                     ),
                     image: DecorationImage(
-                      image: AssetImage(
+                      image: NetworkImage(
                         widget.video.thumbnail,
                       ),
                       // fit: BoxFit.cover,
@@ -101,7 +101,7 @@ class _VideoItemState extends State<VideoItem> {
                         ),
                         const SizedBox(height: 10.0),
                         LinearProgressIndicator(
-                          value: widget.video.progress,
+                          value: widget.video.progress / 100,
                           backgroundColor: Colors.grey[300],
                           color: Color(0xFF348f6c),
                         ),
