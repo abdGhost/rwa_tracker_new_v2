@@ -595,6 +595,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             .take(3)
             .map((coin) => {
                   'name': coin.name,
+                  'image': coin.image,
                   'low_24': coin.low24h.toString(),
                   'priceChange': coin.priceChange24h
                 })
@@ -607,6 +608,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             .take(3)
             .map((coin) => {
                   'name': coin.name,
+                  'image': coin.image,
                   'low_24': coin.low24h.toString(),
                   'priceChange': coin.priceChange24h
                 })
@@ -621,7 +623,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         options: CarouselOptions(
           height: 180,
           enlargeCenterPage: true,
-          autoPlay: false,
+          autoPlay: true,
           aspectRatio: 16 / 9,
           autoPlayCurve: Curves.fastOutSlowIn,
           enableInfiniteScroll: true,
@@ -798,13 +800,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      token['name'],
-                                      style: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Image.network(
+                                          token['image'],
+                                          width: 20,
+                                          height: 20,
+                                        ),
+                                        SizedBox(
+                                          width: 10,
+                                        ),
+                                        Text(
+                                          token['name'],
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     Row(
                                       children: [
