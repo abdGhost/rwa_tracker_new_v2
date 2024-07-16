@@ -623,12 +623,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         options: CarouselOptions(
           height: 180,
           enlargeCenterPage: true,
-          autoPlay: true,
+          autoPlay: false,
           aspectRatio: 16 / 9,
           autoPlayCurve: Curves.fastOutSlowIn,
           enableInfiniteScroll: true,
           autoPlayAnimationDuration: const Duration(milliseconds: 800),
-          viewportFraction: 0.8,
+          viewportFraction: .85,
         ),
         items: items.map((item) {
           return Builder(
@@ -770,9 +770,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           padding: const EdgeInsets.only(top: 10.0),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.trending_up,
-                                color: Colors.red,
+                              Image.asset(
+                                'assets/trending.png',
+                                width: 30,
+                                height: 30,
+                                fit: BoxFit.cover,
                               ),
                               SizedBox(
                                 width: 10,
@@ -788,6 +790,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ],
                           ),
                         ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       if (item.containsKey('tokens'))
                         Expanded(
                           child: ListView.builder(
