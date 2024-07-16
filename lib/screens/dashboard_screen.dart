@@ -661,6 +661,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Column(
                                       crossAxisAlignment:
@@ -728,6 +730,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ],
                                 ),
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Column(
                                       crossAxisAlignment:
