@@ -110,9 +110,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       const Padding(padding: EdgeInsets.only(top: 30)),
                       Image.asset(
-                        'assets/rwa_logo.png',
-                        width: 400,
-                        height: 160,
+                        // 'assets/rwa_logo.png',
+                        "assets/rwa-mobile-login-icon.png",
+                        width: 500,
+                        height: 200,
                       ),
                       const SizedBox(
                         height: 10,
@@ -121,8 +122,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         'Login',
                         style: GoogleFonts.roboto(
                           fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: secondaryColor, // Use the color here
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black54, // Use the color here
                         ),
                       ),
                       const SizedBox(

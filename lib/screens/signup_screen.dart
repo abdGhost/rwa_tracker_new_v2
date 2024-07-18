@@ -168,7 +168,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 children: [
                   const Padding(padding: EdgeInsets.only(top: 30)),
                   Image.asset(
-                    'assets/rwa_logo.png',
+                    // 'assets/rwa_logo.png',
+                    "assets/rwa-mobile-login-icon.png",
                     width: 400,
                     height: 160,
                   ),
@@ -179,8 +180,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     'Create Account',
                     style: GoogleFonts.roboto(
                       fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: secondaryColor, // Use the color here
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black54, // Use the color here
                     ),
                   ),
                   const SizedBox(
@@ -195,7 +196,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 10,
                   ),
                   TextFormField(
                     decoration: InputDecoration(
@@ -231,7 +232,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     },
                   ),
                   const SizedBox(
-                    height: 25,
+                    height: 15,
                   ),
                   TextFormField(
                     decoration: InputDecoration(

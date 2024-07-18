@@ -34,8 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   startTimer() {
-    var duration = const Duration(seconds: 3);
-    // var duration = const Duration(seconds: 10);
+    var duration = const Duration(seconds: 2);
 
     return Timer(duration, navigatedTo);
   }
@@ -52,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: const Color(0xFF348f6c),
       body: Center(
         child: Image.asset(
-          'assets/splash-screen.gif',
+          'assets/loader3.gif',
         ),
       ),
     );
