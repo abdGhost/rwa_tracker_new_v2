@@ -36,7 +36,7 @@ class _AirDropScreenState extends State<AirDropScreen> {
               Column(
                 children: [
                   Image.asset(
-                    'assets/rwa_logo.png',
+                    'assets/rwa-mobile-login-icon.png',
                     width: 200,
                     height: 200,
                   ),
@@ -45,7 +45,7 @@ class _AirDropScreenState extends State<AirDropScreen> {
                     'Airdrop Tasks',
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: Colors.black54,
                       fontSize: 24,
                     ),
                   ),
