@@ -102,6 +102,8 @@ class _AddCoinNewState extends State<AddCoinNew> {
 
     final url = Uri.parse(
         'https://rwa-f1623a22e3ed.herokuapp.com/api/currencies?page=1&size=30&category=$query');
+
+    print(url);
     final response = await http.get(url);
 
     print('Response status: ${response.statusCode}');
@@ -209,9 +211,9 @@ class _AddCoinNewState extends State<AddCoinNew> {
 
       // API call with the JWT token
       final response = await http.post(
-        Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio/$coinId'),
-        // Uri.parse(
-        //     'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio/$coinId'),
+        // Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio/$coinId'),
+        Uri.parse(
+            'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio/$coinId'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $jwtToken',

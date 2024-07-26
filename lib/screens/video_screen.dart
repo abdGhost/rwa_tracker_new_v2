@@ -39,7 +39,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
   Future<Video> fetchVideoData(String token) async {
     final response = await http.get(
-      Uri.parse('http://192.168.1.22:5001/api/lecture'),
+      Uri.parse('https://rwa-f1623a22e3ed.herokuapp.com/api/lecture'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

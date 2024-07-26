@@ -55,7 +55,9 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
     final response = await http.get(
       // Uri.parse(
       //     'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio'),
-      Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio'),
+      // Uri.parse('http://192.168.1.22:5001/api/user/token/portfolio'),
+      Uri.parse(
+          "https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio"),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -102,7 +104,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
       // Uri.parse(
       //     'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/portfolio/$tokenId'),
       Uri.parse(
-          'http://192.168.1.22:5001/api/user/token/remove/portfolio/$tokenId'),
+          'https://rwa-f1623a22e3ed.herokuapp.com/api/user/token/remove/portfolio/$tokenId'),
       headers: {
         'Authorization': 'Bearer $token',
       },
