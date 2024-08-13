@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rwatrackernew/screens/airdrop_screen.dart';
 import 'package:rwatrackernew/screens/dashboard_screen.dart';
+import 'package:rwatrackernew/screens/game_redem.dart';
 import 'package:rwatrackernew/screens/news_screen.dart';
 import 'package:rwatrackernew/screens/portfolio_screen.dart';
 import 'package:rwatrackernew/screens/video_screen.dart';
@@ -22,6 +23,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     const PortfolioScreen(),
     const NewsScreen(),
     const VideoScreen(),
+    const GameRedem(),
     const AirDropScreen()
   ];
 
@@ -57,6 +59,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
             icon: Icon(Icons.video_collection,
                 color: _index == 3 ? Colors.white : Colors.white70),
             label: 'Video',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.games,
+                color: _index == 3 ? Colors.white : Colors.white70),
+            label: 'Game',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_customize,
