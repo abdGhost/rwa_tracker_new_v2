@@ -23,7 +23,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     const PortfolioScreen(),
     const NewsScreen(),
     const VideoScreen(),
-    const GameRedem(),
+    // const GameRedem(),
     const AirDropScreen()
   ];
 
@@ -60,11 +60,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 color: _index == 3 ? Colors.white : Colors.white70),
             label: 'Video',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.games,
-                color: _index == 3 ? Colors.white : Colors.white70),
-            label: 'Game',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.games,
+          //       color: _index == 3 ? Colors.white : Colors.white70),
+          //   label: 'Game',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard_customize,
                 color: _index == 0 ? Colors.white : Colors.white70),

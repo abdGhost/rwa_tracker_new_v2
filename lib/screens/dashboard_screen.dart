@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:rwatrackernew/screens/coin_details_screen.dart';
+import 'package:rwatrackernew/screens/game_redem.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/api_service.dart';
 import '../constant/app_color.dart';
@@ -149,6 +150,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.white,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
+        ),
         title: const Text(
           'Home',
           style: TextStyle(
@@ -156,17 +165,123 @@ class _DashboardScreenState extends State<DashboardScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout, color: Colors.black),
-            onPressed: () async {
-              bool? result = await _showLogoutConfirmationDialog();
-              if (result == true) {
-                _logout();
-              }
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.logout, color: Colors.black),
+        //     onPressed: () async {
+        //       bool? result = await _showLogoutConfirmationDialog();
+        //       if (result == true) {
+        //         _logout();
+        //       }
+        //     },
+        //   ),
+        // ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFF348f6c),
+                shape: BoxShape.rectangle,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage: AssetImage(
+                        'assets/rwa-mobile-login-icon.png'), // Profile picture
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Ghost',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Text color
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10.0,
+                          color: Colors.black54,
+                          offset: Offset(2.0, 2.0),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.games_sharp, color: Colors.teal),
+              title: Text(
+                'Redem Code',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: ((context) {
+                  return GameRedem();
+                })));
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings, color: Colors.teal),
+              title: Text(
+                'Settings',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              onTap: () {
+                // Handle settings navigation
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.contacts, color: Colors.teal),
+              title: Text(
+                'Contact Us',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              onTap: () {
+                // Handle contacts navigation
+                Navigator.pop(context);
+              },
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.logout, color: Colors.redAccent),
+              title: Text(
+                'Logout',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.redAccent,
+                ),
+              ),
+              onTap: () async {
+                // Handle logout navigation
+                Navigator.pop(context);
+                bool? result = await _showLogoutConfirmationDialog();
+                if (result == true) {
+                  _logout();
+                }
+              },
+            ),
+          ],
+        ),
       ),
       body: FutureBuilder<Coin>(
         future: futureCoin,

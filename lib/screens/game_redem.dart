@@ -14,7 +14,7 @@ class _GameRedemState extends State<GameRedem> {
     return Scaffold(
       backgroundColor: Color(0xfffFDFAF6),
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.white,
         title: const Text(
