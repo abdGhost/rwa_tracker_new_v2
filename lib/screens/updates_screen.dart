@@ -30,7 +30,7 @@ class _NewsScreenState extends State<NewsScreen> {
         elevation: 0,
         backgroundColor: Colors.white, // Ensure AppBar is also white
         title: const Text(
-          'Blog',
+          'Updates',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,

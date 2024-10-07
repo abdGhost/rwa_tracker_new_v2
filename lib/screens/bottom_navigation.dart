@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:rwatrackernew/screens/airdrop_screen.dart';
 import 'package:rwatrackernew/screens/dashboard_screen.dart';
 import 'package:rwatrackernew/screens/game_redem.dart';
-import 'package:rwatrackernew/screens/news_screen.dart';
+import 'package:rwatrackernew/screens/updates_screen.dart';
 import 'package:rwatrackernew/screens/portfolio_screen.dart';
 import 'package:rwatrackernew/screens/video_screen.dart';
 
@@ -53,12 +53,12 @@ class _BottomNavigationState extends State<BottomNavigation> {
           BottomNavigationBarItem(
             icon: Icon(Icons.list,
                 color: _index == 2 ? Colors.white : Colors.white70),
-            label: 'Blog',
+            label: 'Updates',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.video_collection,
                 color: _index == 3 ? Colors.white : Colors.white70),
-            label: 'Video',
+            label: 'Learn',
           ),
           // BottomNavigationBarItem(
           //   icon: Icon(Icons.games,

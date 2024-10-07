@@ -65,7 +65,7 @@ class _VideoScreenState extends State<VideoScreen> {
         elevation: 0.4,
         backgroundColor: Colors.white, // Ensure AppBar is also white
         title: const Text(
-          'Video',
+          'Learn',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.w600,
